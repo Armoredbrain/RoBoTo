@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "rootDir": "./",
+        "outDir": "./build",
+        "esModuleInterop": true,
+        "strict": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictPropertyInitialization": false,
+        "useUnknownInCatchVariables": false,
+        "resolveJsonModule": true,
+        "baseUrl": "./",
+        "paths": {
+            "test/*": ["test/*"]
+        }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["src/**/*.test.ts"]
+}

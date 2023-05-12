@@ -1,0 +1,26 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Roboto server",
+        "description": "Roboto server API documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
+    "paths": {
+        "/speak": {
+            "$ref": "./routes/speak.json"
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

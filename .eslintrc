@@ -1,0 +1,26 @@
+{
+    "env": {
+        "node": true,
+        "jest": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["prettier", "@typescript-eslint"],
+    "rules": {
+        "@typescript-eslint/no-non-null-assertion": "off"
+    },
+    "overrides": [
+        {
+            "files": ["*.ts", "*.tsx"],
+            "rules": {
+                "newline-before-return": 1,
+                "prettier/prettier": ["warn", {}, { "usePrettierrc": true }]
+            }
+        }
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended"
+    ]
+}

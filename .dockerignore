@@ -1,0 +1,9 @@
+.husky
+.editorconfig
+.env.example
+.eslintignore
+.eslintrc
+.gitignore
+.prettierignore
+README.md
+*.test.ts

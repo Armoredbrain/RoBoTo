@@ -1,0 +1,8 @@
+node_modules/
+build/
+logs/
+.env
+.husky/
+coverage/
+src/tests/mockFlows/
+src/db/database.db

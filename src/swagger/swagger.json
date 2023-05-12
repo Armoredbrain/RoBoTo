@@ -1,0 +1,149 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Roboto server",
+        "description": "Roboto server API documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
+    "paths": {
+        "/speak": {
+            "post": {
+                "description": "Speak with roboto",
+                "summary": "Start or continue a conversation with roboto",
+                "tags": ["CONVERSATION"],
+                "operationId": "conversation",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Current session mongo uuid"
+                    }
+                ],
+                "requestBody": {
+                    "description": "session and message from user",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "start or resume a conversation",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "examples": {
+                                    "Valid response on /speak": {}
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized acces",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "code": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "Invalid request": {
+                                        "value": {
+                                            "code": 401,
+                                            "message": "Unauthorized access"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Middleware error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "code": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "Invalid request": {
+                                        "value": {
+                                            "code": 406,
+                                            "message": "Some request value didn't pass middleware validation"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Service is offline",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "code": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "Invalid request": {
+                                        "value": {
+                                            "code": "ECONNREFUSED",
+                                            "message": "connect ECONNREFUSED"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

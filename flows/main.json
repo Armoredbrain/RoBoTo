@@ -1,0 +1,27 @@
+{
+    "name": "main",
+    "description": "main bot entry",
+    "startingId": 1,
+    "steps": [
+        {
+            "id": 1,
+            "flow": "main",
+            "checkpoint": false,
+            "waitForUserInput": false,
+            "action": "useMessageToGetIntent",
+            "follow": { "nextCoord": {}, "fallbackCoord": { "flow": "main", "id": 2 } },
+            "position": { "x": 30, "y": -120 }
+        },
+        {
+            "id": 2,
+            "flow": "main",
+            "waitForUserInput": true,
+            "say": {
+                "message": "Hu ho I didn't catch what you said, could you say it again"
+            },
+            "checkpoint": false,
+            "follow": { "nextCoord": { "flow": "main", "id": 1 }, "fallbackCoord": { "flow": "main", "id": 1 } },
+            "position": { "x": 30, "y": 0 }
+        }
+    ]
+}
