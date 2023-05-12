@@ -82,6 +82,7 @@ export function logFormat(data: {
         reset: "\x1b[0m",
     };
 
+    // Thanks @Arno -> https://github.com/Arno67000
     return data.level.includes("error")
         ? `${config.color[data.level]}${config.style.italic}${data.timestamp}${config.style.resetItalic} ${
               config.style.bold
