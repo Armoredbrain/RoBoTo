@@ -15,12 +15,12 @@ export class BotError {
 
     constructor(
         error: Error | AxiosError,
-        data: { source: string; customMessage: string; code: number; information?: Record<string, unknown> }
+        data: { source: string; code: number; customMessage?: string; information?: Record<string, unknown> }
     ) {
         if (this.isAxiosErrorInstance(error)) {
             this.code = error.response?.status ?? data.code;
             this.isAxiosError = true;
-            this.message = error.response?.statusText ?? data.customMessage;
+            this.message = error.response?.statusText ?? data.customMessage ?? "Hu ho something went wrong";
             this.source = data.source;
             this.information = data.information ?? {
                 baseUrl: error.response?.config?.baseURL,

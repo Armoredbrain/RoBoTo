@@ -1,49 +1,58 @@
 import { Request, Response } from "express";
-import logger from "../console/logger";
-import { getSessionById, sessionBuilder, sessionCleaner, updateSession } from "../managers/sessionManager";
-import { SessionStatus, Session } from "../types";
-import { displayErrorTrace, tokenExtractor } from "../managers/tools";
+import logger, { BotError } from "../console/logger";
+import { getSessionById, sessionBuilder, sessionCleaner } from "../managers/sessionManager";
+import { Session } from "../types";
 import { stepRunner } from "../managers/stepManager";
 import { fileReader } from "../managers/fileManager";
 
+// export async function createUser(
+//     req: Request<
+//         // params
+//         Record<string, string>,
+//         // res body
+//         unknown, // ?
+//         // req body
+//         NeomanisUser,
+//         // req query
+//         Record<string, unknown>,
+//         // res locals ?
+//         { neoToken: string; credentials: ItsmCredential[] }
+//     >,
+//     res: Response<
+//         // res body
+//         { code: number; message: string },
+//         // res locals
+//         { neoToken: string; credentials: ItsmCredential[] }
+//     >
+// ): Promise<Response> {
+
 export async function speak(req: Request, res: Response): Promise<Response> {
-    let session: Session | null = null;
+    let session: Session | undefined;
     try {
-        const { sessionId } = req.params;
-        if (typeof sessionId === "string") {
-            session = await getSessionById(sessionId);
-        } else {
+        if (typeof req.params.sessionId === "string") {
+            session = await getSessionById(req.params.sessionId);
+        }
+        if (!session) {
             session = await sessionBuilder({
                 nextStep: { flow: "main" },
                 flow: "main",
             });
         }
 
-        // TODO: created enum for session status
-        if (session.status === SessionStatus.BUSY) {
-            throw new Error("Session is busy, call me back later");
-        }
-
-        session.status = SessionStatus.BUSY;
-        await updateSession(session);
-
-        session = await stepRunner(session, fileReader(session.flow), req.body.say, tokenExtractor(req));
-
-        session.status = SessionStatus.AVAILABLE;
-        await updateSession(session);
+        // TODO: flow should be stored in db and seeded at service startup
+        session = await stepRunner(session, fileReader(session.flow), req.body.say);
 
         return res.status(200).json({
             session: sessionCleaner(session),
         });
     } catch (error) {
-        if (session) {
-            session.status = SessionStatus.AVAILABLE;
-            await updateSession(session);
-        }
-        logger.error("Speaking with roboto seems to be complicated at the moment");
-        if (error.stack) {
-            logger.error(displayErrorTrace(error));
-        }
+        logger.error(
+            new BotError(error, {
+                source: speak.name,
+                customMessage: "Speaking with roboto seems to be complicated at the moment",
+                code: error.code,
+            })
+        );
 
         return res.status(200).json({ session: session, error: error.message });
     }
