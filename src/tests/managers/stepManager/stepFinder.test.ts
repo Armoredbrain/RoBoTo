@@ -1,6 +1,6 @@
 import * as fileManager from "../../../managers/fileManager";
 import { stepFinder } from "../../../managers/stepManager";
-import { Flow } from "@neomanis/neo-types";
+import { Flow } from "../../../types";
 
 const flow: Flow = {
     name: "basic",

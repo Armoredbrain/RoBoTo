@@ -1,8 +1,8 @@
 import axios, { AxiosStatic, AxiosResponse, AxiosError } from "axios";
 import mongoose from "mongoose";
 import MongoMemoryServer from "mongodb-memory-server-core";
-import FS from "../wrapper/fs";
-import { FLOWS } from "../managers/stepManager";
+// import FS from "../wrapper/fs";
+// import { FLOWS } from "../managers/stepManager";
 
 let mongod: MongoMemoryServer;
 
@@ -35,45 +35,45 @@ interface AxiosMock extends AxiosStatic {
 
 export const mockAxios = axios as AxiosMock;
 
-const flows = [
-    { name: "flowA", description: "helloworld", startingId: 1 },
-    { name: "flowB", description: "helloworld", startingId: 1 },
-    { name: "flowC", description: "helloworld", startingId: 1 },
-    { name: "flowD", description: "helloworld", startingId: 1 },
-    {
-        name: "hello",
-        description: "",
-        startingId: 1,
-        steps: [
-            {
-                id: 1,
-                flow: "hello",
-                checkpoint: true,
-                waitForUserInput: false,
-                say: { message: "Hello user" },
-                follow: {
-                    nextCoord: { flow: "hello", id: 2 },
-                    fallbackCoord: { flow: "hello", id: 2 },
-                },
-            },
-            {
-                id: 2,
-                flow: "hello",
-                checkpoint: true,
-                waitForUserInput: true,
-                action: "saveUserPreference",
-                say: {
-                    message: "How do you do?",
-                },
-                follow: {
-                    nextCoord: { flow: "hello", id: 2 },
-                    fallbackCoord: { flow: "hello", id: 2 },
-                },
-            },
-        ],
-    },
-    { name: "toto", startingId: 1 },
-];
+// const flows = [
+//     { name: "flowA", description: "helloworld", startingId: 1 },
+//     { name: "flowB", description: "helloworld", startingId: 1 },
+//     { name: "flowC", description: "helloworld", startingId: 1 },
+//     { name: "flowD", description: "helloworld", startingId: 1 },
+//     {
+//         name: "hello",
+//         description: "",
+//         startingId: 1,
+//         steps: [
+//             {
+//                 id: 1,
+//                 flow: "hello",
+//                 checkpoint: true,
+//                 waitForUserInput: false,
+//                 say: { message: "Hello user" },
+//                 follow: {
+//                     nextCoord: { flow: "hello", id: 2 },
+//                     fallbackCoord: { flow: "hello", id: 2 },
+//                 },
+//             },
+//             {
+//                 id: 2,
+//                 flow: "hello",
+//                 checkpoint: true,
+//                 waitForUserInput: true,
+//                 action: "saveUserPreference",
+//                 say: {
+//                     message: "How do you do?",
+//                 },
+//                 follow: {
+//                     nextCoord: { flow: "hello", id: 2 },
+//                     fallbackCoord: { flow: "hello", id: 2 },
+//                 },
+//             },
+//         ],
+//     },
+//     { name: "toto", startingId: 1 },
+// ];
 
 // export async function seedMockFlows(): Promise<void> {
 //     // delete folder
