@@ -12,10 +12,10 @@ Once your NLU server is up (refer to [this](#prerequisites)) you can talk with y
 ```json
 {
     "say": {
-        "message": "Coucou le bot",
+        "message": "Coucou le bot"
     },
     "session": {
-        "id": "somemongodbuuid",
+        "id": "somemongodbuuid"
     }
 }
 ```
@@ -90,15 +90,6 @@ fi
 #### Coverage test run
 
 -   `yarn test:watch`
-
-**To create new schemas for swagger:**
-
--   go to `src/schemas/[file_containing_your_interfaces_or_types].ts` or in Neo_Types and add your new interface or Type.
--   run `yarn convert` , it will automatically:
-    -   get all interfaces and types from your files
-    -   create new schemas
-    -   update `_index.json` from `swagger/schemas` directory so you can reference them in your routes.
-    -   update swagger.json buy running `yarn swagger:bundle`.
 
 ### Prettier
 
