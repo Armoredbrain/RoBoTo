@@ -8,7 +8,7 @@
             "flow": "main",
             "checkpoint": false,
             "waitForUserInput": false,
-            "action": "useMessageToGetIntent",
+            "action": "targetFlow",
             "follow": { "nextCoord": {}, "fallbackCoord": { "flow": "main", "id": 2 } },
             "position": { "x": 30, "y": -120 }
         },

@@ -78,7 +78,7 @@ export interface NLUDomain {
 }
 
 export interface NluModel {
-    // We do not use for now
+    // We do not use those for now
     pipeline: unknown[];
     policies: unknown[];
     intents: unknown[];
@@ -87,6 +87,8 @@ export interface NluModel {
     actions: unknown[];
     forms: Record<string, unknown>;
     e2e_actions: unknown[];
+    session_config: { session_expiration_time: 60; carry_over_slots_to_new_session: true };
+
     // [
     //     {
     //         rule: "Say goodbye anytime the user says goodbye";
@@ -94,7 +96,6 @@ export interface NluModel {
     //     }
     // ];
     rules: { rule: string; steps: { intent?: string; action?: string }[] }[];
-    session_config: { session_expiration_time: 60; carry_over_slots_to_new_session: true };
 
     // { utter_greet: [{ text: "Hey! How are you?" }]; utter_goodbye: [{ text: "Bye" }] };
     responses: Record<string, { text: string }[]>;

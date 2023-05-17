@@ -2,7 +2,7 @@ import axios, { AxiosStatic, AxiosResponse, AxiosError } from "axios";
 import mongoose from "mongoose";
 import MongoMemoryServer from "mongodb-memory-server-core";
 import FS from "../wrapper/fs";
-import { FLOWSFOLDER } from "../managers/flowManager";
+import { FLOWS } from "../managers/stepManager";
 
 let mongod: MongoMemoryServer;
 
@@ -36,64 +36,61 @@ interface AxiosMock extends AxiosStatic {
 export const mockAxios = axios as AxiosMock;
 
 const flows = [
-    { name: "flowA", description: "helloworld", license: "public", label: "flowA label", startingId: 1 },
-    { name: "flowB", description: "helloworld", license: "public", label: "flowB label", startingId: 1 },
-    { name: "flowC", description: "helloworld", license: "public", label: "flowC label", startingId: 1 },
-    { name: "flowD", description: "helloworld", license: "public", label: "flowD label", startingId: 1 },
+    { name: "flowA", description: "helloworld", startingId: 1 },
+    { name: "flowB", description: "helloworld", startingId: 1 },
+    { name: "flowC", description: "helloworld", startingId: 1 },
+    { name: "flowD", description: "helloworld", startingId: 1 },
     {
-        name: "ticket reopening",
-        label: "ticket reopening label",
+        name: "hello",
         description: "",
         startingId: 1,
-        license: "neomanis",
         steps: [
             {
                 id: 1,
-                flow: "ticket_reopening",
+                flow: "hello",
                 checkpoint: true,
                 waitForUserInput: false,
-                say: { message: "Oh, je suis désolé d'apprendre que votre problème est toujours présent!" },
+                say: { message: "Hello user" },
                 follow: {
-                    nextCoord: { flow: "ticket_reopening", id: 2 },
-                    fallbackCoord: { flow: "ticket_reopening", id: 2 },
+                    nextCoord: { flow: "hello", id: 2 },
+                    fallbackCoord: { flow: "hello", id: 2 },
                 },
             },
             {
                 id: 2,
-                flow: "ticket_reopening",
+                flow: "hello",
                 checkpoint: true,
                 waitForUserInput: true,
-                action: "talkingToHuman",
+                action: "saveUserPreference",
                 say: {
-                    message:
-                        "Si vous avez des informations complémentaires à communiquer, n'hésitez pas à me les indiquer dans le chat je les transmettrai au technicien en charge de votre ticket.",
+                    message: "How do you do?",
                 },
                 follow: {
-                    nextCoord: { flow: "ticket_reopening", id: 2 },
-                    fallbackCoord: { flow: "ticket_reopening", id: 2 },
+                    nextCoord: { flow: "hello", id: 2 },
+                    fallbackCoord: { flow: "hello", id: 2 },
                 },
             },
         ],
     },
-    { name: "toto", startingId: 1, license: "public" },
+    { name: "toto", startingId: 1 },
 ];
 
 // export async function seedMockFlows(): Promise<void> {
 //     // delete folder
-//     if (FS.existsSync(FLOWSFOLDER())) FS.rmSync(FLOWSFOLDER(), { recursive: true, force: true });
+//     if (FS.existsSync(FLOWS())) FS.rmSync(FLOWS(), { recursive: true, force: true });
 
 //     // create a new one
-//     if (!FS.existsSync(FLOWSFOLDER())) FS.mkdirSync(FLOWSFOLDER());
+//     if (!FS.existsSync(FLOWS())) FS.mkdirSync(FLOWS());
 
 //     for (const flow of flows) {
-//         FS.writeFileSync(`${FLOWSFOLDER()}/${formatFilename(flow.name)}.json`, JSON.stringify(flow));
+//         FS.writeFileSync(`${FLOWS()}/${formatFilename(flow.name)}.json`, JSON.stringify(flow));
 //     }
 
 //     // write exception
-//     FS.writeFileSync(`${FLOWSFOLDER()}/${formatFilename("wrongParsing")}.json`, "{");
+//     FS.writeFileSync(`${FLOWS()}/${formatFilename("wrongParsing")}.json`, "{");
 //     await new FlowModel({ filename: formatFilename("wrongParsing") }).save();
 //     FS.writeFileSync(
-//         `${FLOWSFOLDER()}/README.md`,
+//         `${FLOWS()}/README.md`,
 //         "### HELLO ticket_reopening.json file in this folder is required as it is used as hard coded value in sessionController (line 10 or something)"
 //     );
 // }

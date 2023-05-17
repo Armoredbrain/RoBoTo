@@ -1,14 +1,36 @@
 import { Schema, model } from "mongoose";
-import { Session } from "../types";
+import { Say, Session, Step, StepCoord, StepFollow } from "../types";
 
-export const SessionSchema = new Schema<Session>({
-    checkpoint: Schema.Types.Mixed,
+const SaySchema = new Schema<Say>({
+    message: String,
+});
+const StepCoordSchema = new Schema<StepCoord>({
     flow: String,
-    history: [{ type: Schema.Types.Mixed, default: [] }],
-    nextStep: Schema.Types.Mixed,
-    stacktrace: [{ type: Schema.Types.Mixed, default: [] }],
+    id: { type: Number, required: false },
+});
+const StepFollowSchema = new Schema<StepFollow>({
+    fallbackCoord: StepCoordSchema,
+    nextCoord: StepCoordSchema,
+});
+const StepSchema = new Schema<Step>({
+    action: String,
+    args: Schema.Types.Mixed,
+    checkpoint: Boolean,
+    flow: String,
+    follow: StepFollowSchema,
+    id: Number,
+    type: String,
+    say: SaySchema,
+    waitForUserInput: Boolean,
+});
+export const SessionSchema = new Schema<Session>({
+    checkpoint: StepCoordSchema,
+    flow: String,
+    history: [{ type: SaySchema, default: [] }],
+    nextStep: StepCoordSchema,
+    stacktrace: [{ type: StepSchema, default: [] }],
     status: { type: Number, default: 0 },
-    variables: { type: Object, default: {} },
+    variables: { type: Schema.Types.Mixed, default: {} },
 });
 
 export const SessionModel = model<Session>("sessionModel", SessionSchema);

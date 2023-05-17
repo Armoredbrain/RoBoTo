@@ -1,14 +1,32 @@
 import { updateSession } from "./sessionManager";
 import { fileReader } from "./fileManager";
-import { flowGate } from "./flowManager";
 import logger, { BotError } from "../console/logger";
 import { Flow, Say, Session, SessionStatus, Step } from "../types";
+import { findIntent } from "./nlu";
+
+export const FLOWS = () => {
+    /* istanbul ignore next */
+    if (process.env.NODE_ENV !== "test") {
+        return process.env.FLOWSFOLDER ?? "./flows";
+    } else {
+        return "./src/tests/mockFlows";
+    }
+};
+
+export const MAPPING = () => {
+    /* istanbul ignore next */
+    if (process.env.NODE_ENV !== "test") {
+        return process.env.CONFIGFOLDER ?? "./config";
+    } else {
+        return "./src/tests/mockConfig";
+    }
+};
 
 export function stepFinder(flow: Flow, pointer: { flow: string; id?: number }): Step {
     const step = flow.steps.find((el: Step) => el.id === (pointer.id ?? flow.startingId));
 
     if (!step) {
-        // SHOULD NEVER HAPPEN if flow are correctly built and check !!
+        // SHOULD NEVER HAPPEN if flow are correctly built and check
         throw new Error("Cannot find corresponding step");
     }
 
@@ -26,13 +44,12 @@ function getDeepValue(session: Session, path: string): string {
         return data && typeof data !== "object" ? data : "Hu Ho";
     } catch (error) {
         logger.error(new BotError(error, { source: getDeepValue.name, code: 500, customMessage: error.message }));
-        logger.error("getDeepValue");
 
         return "Hu Ho";
     }
 }
 
-export async function stepRunner(session: Session, flow: Flow, userSay: Say, jwt: string): Promise<Session> {
+export async function stepRunner(session: Session, flow: Flow, userSay: Say): Promise<Session> {
     const step = stepFinder(flow, session.nextStep);
 
     if (step.say && step.say.message) {
@@ -51,9 +68,17 @@ export async function stepRunner(session: Session, flow: Flow, userSay: Say, jwt
 
             break;
 
-        case "flowGate": {
-            // Decide which flow to follow and update session with the required parameters
-            session.nextStep = await flowGate(userSay.message, step);
+        case "targetFlow": {
+            // Decide which flow to follow by looking at user intent from nlu server
+            const foundIntent = await findIntent(userSay.message);
+            const flow = Object.entries(MAPPING()).reduce((acc, [flow, intents]) => {
+                if (Array.isArray(intents) && intents.includes(foundIntent)) {
+                    acc = flow;
+                }
+
+                return acc;
+            }, "");
+            session.nextStep = flow ? { flow, id: step.follow.nextCoord.id } : step.follow.fallbackCoord;
             break;
         }
 
@@ -104,7 +129,7 @@ export async function stepRunner(session: Session, flow: Flow, userSay: Say, jwt
             session.flow = formattedFlowName;
         }
 
-        return await stepRunner(session, flow, userSay, jwt);
+        return await stepRunner(session, flow, userSay);
     }
 
     return session;
