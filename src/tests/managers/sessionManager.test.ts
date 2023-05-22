@@ -28,7 +28,7 @@ describe("sessionBuilder", () => {
         expect(newSession).toEqual(
             expect.objectContaining({
                 flow: "ok",
-                nextStep: { flow: "ok", id: 1 },
+                nextStep: expect.objectContaining({ flow: "ok", id: 1 }),
                 status: SessionStatus.AVAILABLE,
                 stacktrace: [],
                 history: [],
@@ -41,9 +41,6 @@ describe("sessionBuilder", () => {
 describe("updateSession", () => {
     test("Should update session", async () => {
         const session = {
-            username: "toto",
-            userNeoId: 77,
-            computerName: "wiserthanme",
             flow: "ok",
             nextStep: { flow: "ok", id: 1 },
         };
@@ -51,26 +48,16 @@ describe("updateSession", () => {
         newSession.nextStep = { flow: "ok", id: 1 };
         await updateSession(newSession);
 
-        const updatedSession = await SessionModel.findOne({ id: newSession.id });
+        const updatedSession = await SessionModel.findOne({ _id: newSession.id });
         expect(updatedSession).toEqual(
             expect.objectContaining({
                 status: SessionStatus.AVAILABLE,
-                computerName: "wiserthanme",
                 flow: "ok",
-                nextStep: {
+                nextStep: expect.objectContaining({
                     flow: "ok",
                     id: 1,
-                },
-                stacktrace: [],
-                talkingToHuman: false,
-                techName: "neobot",
-                ticket: expect.objectContaining({
-                    uid: "GL-1",
-                    userAssignedTo: [],
-                    userRequester: [],
                 }),
-                userNeoId: 77,
-                username: "toto",
+                stacktrace: [],
                 history: [],
             })
         );
@@ -92,18 +79,8 @@ describe("sessionCleaner", () => {
             nextStep: { flow: "ok", id: 1 },
         };
         const newSession = await sessionBuilder(session);
-        const cleanSession = sessionCleaner(newSession, ["username", "userNeoId", "computerName", "ticket"]);
-        expect(cleanSession).toEqual({
-            username: "toto",
-            userNeoId: 77,
-            computerName: "wiserthanme",
-            ticket: expect.objectContaining({
-                uid: "GL-1",
-                resources: [],
-                userAssignedTo: [],
-                userRequester: [],
-            }),
-        });
+        const cleanSession = sessionCleaner(newSession, ["id"]);
+        expect(cleanSession).toEqual({ id: newSession.id });
     });
     test("Should keep default keys in `keepKeys` argument", async () => {
         const session = {
@@ -115,17 +92,6 @@ describe("sessionCleaner", () => {
         const cleanSession = sessionCleaner(newSession);
         expect(cleanSession).toEqual({
             id: newSession.id,
-            ticket: expect.objectContaining({
-                uid: "GL-1",
-                resources: [],
-                userAssignedTo: [],
-                userRequester: [],
-            }),
-            username: "toto",
-            userNeoId: 77,
-            techName: "neobot",
-            computerName: "wiserthanme",
-            talkingToHuman: false,
             status: 0,
         });
     });

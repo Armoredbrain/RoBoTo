@@ -1,30 +1,21 @@
-import { Step, SessionStatus, ServiceName } from "@neomanis/neo-types";
 import * as sessionManager from "../../../../managers/sessionManager";
 import { stepRunner } from "../../../../managers/stepManager";
+import { SessionStatus, Step } from "../../../../types";
 
 const session = {
-    id: "abc123",
-    talkingToHuman: false,
-    username: "toto",
-    techName: "neobot",
-    userNeoId: 77,
-    neoBotId: 55,
-    computerName: "wiserthanme",
-    resourcesType: "PRINTER",
+    id: "aaaaaaaaaaaaaaaaaaaaaaaa",
     stacktrace: [] as Step[],
     flow: "basic",
     nextStep: { flow: "basic", id: 1 },
     status: SessionStatus.AVAILABLE,
     variables: {},
     history: [],
-    entity: { id: 1, itsmCode: "IT1" },
-    platform: ServiceName.NEO_HELPER,
+    checkpoint: { id: 1, flow: "basic" },
 };
-
-jest.spyOn(sessionManager, "updateSession").mockImplementation(async () => Promise.resolve());
 
 describe("saveSessionVariablesWithUserInput", () => {
     test("should save variables from step args with user input to session and return nextCoord", async () => {
+        jest.spyOn(sessionManager, "updateSession").mockReturnValue(Promise.resolve());
         const updatedSession = await stepRunner(
             session,
             {
@@ -39,22 +30,30 @@ describe("saveSessionVariablesWithUserInput", () => {
                             dynamicVariable: "",
                         },
                         follow: {
+                            nextCoord: { flow: "basic", id: 2 },
+                            fallbackCoord: { flow: "fallback", id: 1 },
+                        },
+                        flow: "basic",
+                        checkpoint: true,
+                        waitForUserInput: true,
+                    },
+                    {
+                        id: 2,
+                        follow: {
                             nextCoord: { flow: "basic", id: 1 },
                             fallbackCoord: { flow: "fallback", id: 1 },
                         },
                         flow: "basic",
-                        checkpoint: false,
+                        checkpoint: true,
                         waitForUserInput: true,
                     },
                 ],
             },
             {
                 message: "toto is here",
-                sequencePosition: 0,
-            },
-            "jwtoken"
+            }
         );
-        expect(updatedSession.nextStep).toEqual({ flow: "basic", id: 1 });
+        expect(updatedSession.nextStep).toEqual({ flow: "basic", id: 2 });
         expect(updatedSession.variables).toEqual({ dynamicVariable: "toto is here" });
     });
 });
