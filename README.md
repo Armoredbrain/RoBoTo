@@ -7,20 +7,15 @@ It is in communication with a NLU server from rasa [here](https://github.com/Arm
 
 ## How to talk with your bot?
 
-Once your NLU server is up (refer to [this](#prerequisites)) you can talk with your bot by `POST` to `/speak?sessionId=<insert session id>` with a payload like this :
+Once your NLU server is up you can talk with your bot by `POST` to `/speak?<insert session id if it exists>` with a payload like this :
 
 ```json
 {
     "say": {
         "message": "Coucou le bot"
-    },
-    "session": {
-        "id": "somemongodbuuid"
     }
 }
 ```
-
-**You can refer to json object like [botSay](./src/swagger/schemas/botSay.json) and [userSay](./src/swagger/schemas/userSay.json)**
 
 #
 
@@ -45,7 +40,7 @@ Currently last lts version is `18.16.0`, it will change sooner or later. So when
 
 ### Mapping bot flows and intents
 
-You will find a file [mappingFlowIntent](./config/mappingFlowIntent.json). It is here to allow you to route your intent from nlu server to corresponding bot flow
+You will find a file [mapping](./config/mapping.json). It is here to allow you to route your intent from nlu server to corresponding bot flow
 
 ```json
 {
