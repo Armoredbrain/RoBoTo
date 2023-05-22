@@ -6,7 +6,7 @@ import request from "supertest";
 describe("mongoIdParam", () => {
     const app = express();
     app.use(express.json());
-    app.get("/:id", mongoIdParam(), validator, (_req: Request, res: Response) => {
+    app.get("/:sessionId", mongoIdParam(), validator, (_req: Request, res: Response) => {
         res.status(200).end();
     });
     test("should let request pass", (done) => {

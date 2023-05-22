@@ -8,7 +8,7 @@ import { mongoIdParam } from "../middlewares/paramValidator";
 export const speakRouter = Router();
 
 speakRouter.post(
-    "/:id?",
+    "/:sessionId?",
     (req: Request, res: Response, next: NextFunction) => {
         checkSessionStatus(req, res, next);
     },

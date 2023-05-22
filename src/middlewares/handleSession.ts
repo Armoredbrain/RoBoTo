@@ -9,16 +9,14 @@ export async function checkSessionStatus(req: Request, res: Response, next: Next
         if (session?.status === SessionStatus.BUSY || session?.status === SessionStatus.CLOSED) {
             throw new Error("Session is unavailable");
         } else if (session) {
-            await updateSession({ id: session?.id, status: SessionStatus.BUSY });
+            await updateSession({ id: session.id, status: SessionStatus.BUSY });
         }
         next();
     } catch (error) {
         const botError = new BotError(error, { source: checkSessionStatus.name, code: 403 });
         logger.error(botError);
 
-        return res
-            .status(botError.code)
-            .json({ code: botError.code, message: error.message ?? "Communication cannot process correctly" });
+        return res.status(botError.code).json({ code: botError.code, message: error.message });
     }
 }
 
