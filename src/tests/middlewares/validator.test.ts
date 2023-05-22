@@ -6,7 +6,7 @@ import request from "supertest";
 describe("validator", () => {
     const app = express();
     app.use(express.json());
-    app.get("/:id/:filename", mongoIdParam(), validator, (_req: Request, res: Response) => {
+    app.get("/:sessionId/:filename", mongoIdParam(), validator, (_req: Request, res: Response) => {
         res.status(200).end();
     });
     test("should chain validator and check them in validator", (done) => {
