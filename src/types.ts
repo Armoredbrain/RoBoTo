@@ -85,27 +85,27 @@ export interface NluModel {
     actions: unknown[];
     forms: Record<string, unknown>;
     e2e_actions: unknown[];
-    session_config: { session_expiration_time: 60; carry_over_slots_to_new_session: true };
+    session_config: { session_expiration_time: 60; carry_over_slots_to_new_session: boolean };
 
     // [
     //     {
-    //         rule: "Say goodbye anytime the user says goodbye";
-    //         steps: [{ intent: "goodbye" }, { action: "utter_goodbye" }];
+    //         rule: "Say goodbye anytime the user says goodbye",
+    //         steps: [{ intent: "goodbye" }, { action: "utter_goodbye" }]
     //     }
     // ];
     rules: { rule: string; steps: { intent?: string; action?: string }[] }[];
 
-    // { utter_greet: [{ text: "Hey! How are you?" }]; utter_goodbye: [{ text: "Bye" }] };
+    // { utter_greet: [{ text: "Hey! How are you?" }], utter_goodbye: [{ text: "Bye" }] }
     responses: Record<string, { text: string }[]>;
 
     // here code should make it easy for front to send an array of string and formatting it to fit nlu requirement
-    //[{ intent: "greet"; examples: "- hey\n- hello\n" }, { intent: "goodbye"; examples: "- bye\n- goodbye\n" }];
+    //[{ intent: "greet", examples: "- hey\n- hello\n" }, { intent: "goodbye", examples: "- bye\n- goodbye\n" }]
     nlu: { intent: string; examples: string }[];
 
     // [
     //     {
     //         story: "happy path";
-    //         steps: [{ intent: "greet" }, { action: "utter_greet" }, { intent: "goodbye" }, { action: "utter_goodbye" }];
+    //         steps: [{ intent: "greet", action: "utter_greet" }, { intent: "goodbye" , action: "utter_goodbye" }]
     //     }
     // ];
     stories: { story: string; steps: { intent?: string; action: string }[] }[];

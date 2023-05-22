@@ -51,7 +51,7 @@ export async function getAllDomainInfo(): Promise<NLUDomain> {
 export async function trainNewModel(model: NluModel): Promise<void> {
     const yamlModel = new YamlDocument();
     Reflect.set(yamlModel, "contents", model);
-    const res = await axios({
+    await axios({
         method: "POST",
         url: `${process.env.NLU_SERVER_URL}/model/train?token=${process.env.NLU_SECRET}`,
         headers: {
@@ -59,6 +59,4 @@ export async function trainNewModel(model: NluModel): Promise<void> {
         },
         data: yamlModel.toString(),
     });
-
-    return res.data;
 }
