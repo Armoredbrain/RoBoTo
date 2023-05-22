@@ -69,7 +69,6 @@ export async function trainNewModel(model: NluModel): Promise<void> {
     const yamlModel = new YamlDocument();
     // TODO: find a way to properly convert NluModel into yaml Node interface instead of this shenaningan
     Reflect.set(yamlModel, "contents", model);
-    console.log(yamlModel.toString());
     const res = await axios({
         method: "POST",
         url: `${process.env.NLU_SERVER_URL}/model/train?token=${process.env.NLU_SECRET}`,

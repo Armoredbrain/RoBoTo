@@ -41,7 +41,7 @@ function getDeepValue(session: Session, path: string): string {
             data = Reflect.get(data, key);
         }
 
-        return data && typeof data !== "object" ? data : "Hu Ho";
+        return typeof data !== "object" ? data : "Hu Ho";
     } catch (error) {
         logger.error(new BotError(error, { source: getDeepValue.name, code: 500, customMessage: error.message }));
 
@@ -110,6 +110,7 @@ export async function stepRunner(session: Session, flow: Flow, userSay: Say): Pr
 
     // This is the only place where message should be saved
     if (step.say && step.say.message) {
+        // TODO: implement sending message through websocket
         session.history.push({ message: step.say.message });
     }
 

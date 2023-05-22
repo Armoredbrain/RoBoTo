@@ -3,8 +3,9 @@ import { Session } from "../types";
 
 export async function sessionBuilder(session: Partial<Session>): Promise<Session> {
     const userSession = new SessionModel(session);
+    const savedUserSession = await userSession.save();
 
-    return (await userSession.save()).toObject();
+    return { id: savedUserSession._id, ...savedUserSession.toObject() };
 }
 
 export async function getSessionById(id: string): Promise<Session | undefined> {
