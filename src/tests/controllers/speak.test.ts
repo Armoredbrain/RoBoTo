@@ -233,4 +233,32 @@ describe("speak", () => {
             error: "Something unusual happen during step running",
         });
     });
+    test("should handle a critical error caused by database being disconnected during conversation and new session not being initialized", async () => {
+        const req: Partial<Request> = {
+            headers: {},
+            cookies: {},
+            params: {},
+            body: {
+                say: { message: "Hello roboto" },
+            },
+        };
+        const res: Partial<Response> = {
+            locals: {},
+        };
+
+        res.status = jest.fn().mockReturnValue(res);
+        res.json = jest.fn().mockReturnValue(res);
+
+        await close();
+
+        await speak(req as Request, res as Response);
+
+        await connect();
+        await clear();
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            session: undefined,
+            error: expect.stringContaining("Client must be connected before running operations"),
+        });
+    });
 });
