@@ -26,10 +26,8 @@ export interface Step {
 export interface Flow {
     name: string;
     description: string;
-    label?: string;
     startingId: number;
     steps: Step[];
-    readonly license?: string;
 }
 export class CallError<T> {
     source: string;

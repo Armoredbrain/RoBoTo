@@ -1,1 +1,0 @@
-# here only to add folder structure to boilerplate, should be deleted as soon as you have file in this folder
