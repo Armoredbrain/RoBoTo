@@ -7,7 +7,7 @@
         "parameters": [
             {
                 "in": "path",
-                "name": "id",
+                "name": "sessionId",
                 "schema": {
                     "type": "string"
                 },
@@ -15,30 +15,46 @@
             }
         ],
         "requestBody": {
-            "description": "session and message from user",
+            "description": "message from user",
             "required": true,
             "content": {
                 "application/json": {
                     "schema": {
                         "type": "object",
-                        "properties": {}
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
         },
-        "security": [
-            {
-                "bearerAuth": []
-            }
-        ],
         "responses": {
             "200": {
                 "description": "start or resume a conversation",
                 "content": {
                     "application/json": {
-                        "schema": {},
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "integer"
+                                }
+                            }
+                        },
                         "examples": {
-                            "Valid response on /speak": {}
+                            "Valid response on /speak": {
+                                "value": {
+                                    "session": {
+                                        "id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+                                        "status": 0
+                                    }
+                                }
+                            }
                         }
                     }
                 }

@@ -11,7 +11,7 @@
         }
     ],
     "paths": {
-        "/speak": {
+        "/speak/{sessionId}": {
             "$ref": "./routes/speak.json"
         }
     },
