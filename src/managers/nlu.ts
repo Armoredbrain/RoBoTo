@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { NLUDomain, NluModel, CallError } from "../types";
+import { NLUDomain, NluModel } from "../types";
 import { Document as YamlDocument } from "yaml";
 import logger from "../console/logger";
 
@@ -12,9 +12,10 @@ export async function connectToNlu(): Promise<void> {
                 Accept: "application/json",
             },
         });
-        logger.info(`connected to NLU server`);
+        logger.info("connected to NLU server");
     } catch (error) {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        logger.info("retry to connect to NLU server");
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         return await connectToNlu();
     }
@@ -35,8 +36,6 @@ export async function findIntent(message: string): Promise<{ name: string; info:
     return { name: response.data.intent.name, info: response.data };
 }
 
-// unused for now, need change in NLU server to work correctly, see commit #785647a411 on NLU_server
-// Once change done, apply to other axios call to nlu server
 export async function getAllDomainInfo(): Promise<NLUDomain> {
     const res = await axios({
         method: "GET",
@@ -49,25 +48,8 @@ export async function getAllDomainInfo(): Promise<NLUDomain> {
     return res.data;
 }
 
-export async function mockCall(args: Record<string, unknown>): Promise<void | CallError<{ message: string }>> {
-    try {
-        await axios({
-            method: "post",
-            url: `${process.env.NLU_SERVER}/`,
-            data: args,
-        });
-    } catch (error) {
-        return new CallError<{ message: "Something went wrong during diagnostic url fetching" }>(
-            "fetchDiagUrl",
-            error.message ?? error.response.statusText,
-            { message: "Something went wrong during diagnostic url fetching" }
-        );
-    }
-}
-
 export async function trainNewModel(model: NluModel): Promise<void> {
     const yamlModel = new YamlDocument();
-    // TODO: find a way to properly convert NluModel into yaml Node interface instead of this shenaningan
     Reflect.set(yamlModel, "contents", model);
     const res = await axios({
         method: "POST",
