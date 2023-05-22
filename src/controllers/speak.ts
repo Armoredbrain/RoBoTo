@@ -1,41 +1,26 @@
 import { Request, Response } from "express";
 import logger, { BotError } from "../console/logger";
 import { getSessionById, sessionBuilder, sessionCleaner } from "../managers/sessionManager";
-import { Session } from "../types";
+import { Session, SessionStatus } from "../types";
 import { stepRunner } from "../managers/stepManager";
 import { fileReader } from "../managers/fileManager";
+import { Say } from "../types";
 
-// export async function createUser(
-//     req: Request<
-//         // params
-//         Record<string, string>,
-//         // res body
-//         unknown, // ?
-//         // req body
-//         NeomanisUser,
-//         // req query
-//         Record<string, unknown>,
-//         // res locals ?
-//         { neoToken: string; credentials: ItsmCredential[] }
-//     >,
-//     res: Response<
-//         // res body
-//         { code: number; message: string },
-//         // res locals
-//         { neoToken: string; credentials: ItsmCredential[] }
-//     >
-// ): Promise<Response> {
-
-export async function speak(req: Request, res: Response): Promise<Response> {
+export async function speak(
+    req: Request<Record<string, string>, unknown, { say: Say }, Record<string, unknown>, Record<string, unknown>>,
+    res: Response<
+        { session: Partial<Session> } | { session: Partial<Session> | undefined; error: string },
+        Record<string, unknown>
+    >
+): Promise<Response> {
     let session: Session | undefined;
     try {
-        if (typeof req.params.sessionId === "string") {
-            session = await getSessionById(req.params.sessionId);
-        }
+        session = await getSessionById(req.params.sessionId);
         if (!session) {
             session = await sessionBuilder({
                 nextStep: { flow: "main" },
                 flow: "main",
+                status: SessionStatus.BUSY,
             });
         }
 
@@ -54,6 +39,12 @@ export async function speak(req: Request, res: Response): Promise<Response> {
             })
         );
 
-        return res.status(200).json({ session: session, error: error.message });
+        return res
+            .status(500)
+            .json(
+                session
+                    ? { session: sessionCleaner(session), error: error.message }
+                    : { session: undefined, error: error.message }
+            );
     }
 }
