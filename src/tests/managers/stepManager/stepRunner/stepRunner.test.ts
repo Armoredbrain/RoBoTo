@@ -92,7 +92,7 @@ describe("stepRunner", () => {
                     {
                         id: 1,
                         say: {
-                            message: "Hello, I your nextStep flow is: '${nextStep.flow}'",
+                            message: "Hello, your nextStep flow is: '${nextStep.flow}'",
                         },
                         follow: {
                             nextCoord: { flow: "basic", id: 2 },
@@ -121,19 +121,68 @@ describe("stepRunner", () => {
         );
 
         const lastStep = updatedSession.stacktrace[0] as Step;
-        expect(lastStep.say).toEqual({ message: "Hello, I your nextStep flow is: 'basic'" });
+        expect(lastStep.say).toEqual({ message: "Hello, your nextStep flow is: 'basic'" });
         expect(updatedSession.checkpoint).toEqual({ id: 1, flow: "basic" });
         expect(updatedSession.nextStep).toEqual({ id: 2, flow: "basic" });
     });
-    // test("Should push an error into stacktrace if encountering an error", async () => {
-    //     // TODO: handle test case
-    // });
-    // test("Should handle recursivity and flow switch if step has waitForUserInput set to false and follow coord has a different flow than current flow", async () => {
-    //     const newSession = await sessionBuilder({ ...session, nextStep: { id: 2, flow: "basic" } });
-    //     const updatedSession = await stepRunner(newSession, flow, { message: "Let's go roboto" });
+    test("Should handle recursivity and flow switch if step has waitForUserInput set to false and follow coord has a different flow than current flow", async () => {
+        const newSession = await sessionBuilder({ ...session, nextStep: { id: 2, flow: "hello" }, flow: "hello" });
+        const updatedSession = await stepRunner(newSession, fileReader(FLOWS(), "hello"), {
+            message: "Let's go roboto",
+        });
 
-    //     expect(updatedSession.checkpoint).toEqual({ id: 1, flow: "exit" });
-    //     expect(updatedSession.nextStep).toEqual({ id: 2, flow: "exit" });
-    //     expect(updatedSession.stacktrace.length).toEqual(2);
-    // });
+        expect(updatedSession.checkpoint).toEqual({ id: 1, flow: "bye" });
+        expect(updatedSession.nextStep).toEqual({ id: 1, flow: "bye" });
+        expect(updatedSession.stacktrace.length).toEqual(2);
+    });
+    test("Should use mapping to target correct flow", async () => {
+        const newSession = await sessionBuilder({ ...session, nextStep: { id: 1, flow: "mock" }, flow: "hello" });
+        jest.spyOn(NLU, "findIntent").mockReturnValueOnce(Promise.resolve({ name: "hello", info: {} }));
+        const updatedSession = await stepRunner(
+            newSession,
+            {
+                description: "mock target different flow",
+                name: "mocker",
+                startingId: 1,
+                steps: [
+                    {
+                        id: 1,
+                        checkpoint: true,
+                        waitForUserInput: true,
+                        flow: "mocker",
+                        action: "targetFlow",
+                        follow: { nextCoord: { id: 1 } as StepCoord, fallbackCoord: { id: 1, flow: "mocker" } },
+                    },
+                ],
+            },
+            { message: "Let's go roboto" }
+        );
+
+        expect(updatedSession.nextStep).toEqual({ id: 1, flow: "hello" });
+    });
+    test("Should fallback if intent doesn't correspond to an existing flow", async () => {
+        const newSession = await sessionBuilder({ ...session, nextStep: { id: 1, flow: "mock" }, flow: "hello" });
+        jest.spyOn(NLU, "findIntent").mockReturnValueOnce(Promise.resolve({ name: "toto", info: {} }));
+        const updatedSession = await stepRunner(
+            newSession,
+            {
+                description: "mock target different flow",
+                name: "mocker",
+                startingId: 1,
+                steps: [
+                    {
+                        id: 1,
+                        checkpoint: true,
+                        waitForUserInput: true,
+                        flow: "mocker",
+                        action: "targetFlow",
+                        follow: { nextCoord: { id: 1 } as StepCoord, fallbackCoord: { id: 1, flow: "mocker" } },
+                    },
+                ],
+            },
+            { message: "Let's go roboto" }
+        );
+
+        expect(updatedSession.nextStep).toEqual({ id: 1, flow: "mocker" });
+    });
 });

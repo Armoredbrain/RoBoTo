@@ -15,7 +15,7 @@ export function stepFinder(flow: Flow, pointer: { flow: string; id?: number }): 
     return step;
 }
 
-function getDeepValue(session: Session, path: string): string {
+export function getDeepValue(session: Session, path: string): string {
     try {
         const keyChain = path.split(".");
         let data = session;
@@ -23,7 +23,7 @@ function getDeepValue(session: Session, path: string): string {
             data = Reflect.get(data, key);
         }
 
-        return typeof data !== "object" ? data : "Hu Ho";
+        return String(data);
     } catch (error) {
         logger.error(new BotError(error, { source: getDeepValue.name, code: 500, customMessage: error.message }));
 
