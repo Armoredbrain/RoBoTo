@@ -1,18 +1,18 @@
-import * as db from "../helper";
+import { connect, close, clear } from "../helper";
 import { sessionBuilder, sessionCleaner, updateSession } from "../../managers/sessionManager";
 import { SessionModel } from "../../entities/Session";
 import { SessionStatus } from "../../types";
 
 beforeAll(async () => {
-    await db.connect();
+    await connect();
 });
 
 afterEach(async () => {
-    await db.clear();
+    await clear();
 });
 
 afterAll(async () => {
-    await db.close();
+    await close();
 });
 
 describe("sessionBuilder", () => {
