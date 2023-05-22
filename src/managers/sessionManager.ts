@@ -9,7 +9,7 @@ export async function sessionBuilder(session: Partial<Session>): Promise<Session
 }
 
 export async function getSessionById(id: string): Promise<Session | undefined> {
-    return (await SessionModel.findOne({ _id: id }))?.toObject() ?? undefined;
+    return (await SessionModel.findOne({ _id: id })) ?? undefined;
 }
 
 export async function updateSession(session: Partial<Session>): Promise<void> {
