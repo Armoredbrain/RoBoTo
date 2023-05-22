@@ -1,26 +1,8 @@
 import { updateSession } from "./sessionManager";
-import { fileReader } from "./fileManager";
+import { FLOWS, MAPPING, fileReader } from "./fileManager";
 import logger, { BotError } from "../console/logger";
 import { Flow, Say, Session, SessionStatus, Step } from "../types";
 import { findIntent } from "./nlu";
-
-export const FLOWS = () => {
-    /* istanbul ignore next */
-    if (process.env.NODE_ENV !== "test") {
-        return process.env.FLOWSFOLDER ?? "./flows";
-    } else {
-        return "./src/tests/mockFlows";
-    }
-};
-
-export const MAPPING = () => {
-    /* istanbul ignore next */
-    if (process.env.NODE_ENV !== "test") {
-        return process.env.CONFIGFOLDER ?? "./config";
-    } else {
-        return "./src/tests/mockConfig";
-    }
-};
 
 export function stepFinder(flow: Flow, pointer: { flow: string; id?: number }): Step {
     const step = flow.steps.find((el: Step) => el.id === (pointer.id ?? flow.startingId));
@@ -71,8 +53,8 @@ export async function stepRunner(session: Session, flow: Flow, userSay: Say): Pr
         case "targetFlow": {
             // Decide which flow to follow by looking at user intent from nlu server
             const foundIntent = await findIntent(userSay.message);
-            const flow = Object.entries(MAPPING()).reduce((acc, [flow, intents]) => {
-                if (Array.isArray(intents) && intents.includes(foundIntent)) {
+            const flow = Object.entries(fileReader(MAPPING(), "mapping")).reduce((acc, [flow, intents]) => {
+                if (Array.isArray(intents) && intents.includes(foundIntent.name)) {
                     acc = flow;
                 }
 
@@ -126,7 +108,7 @@ export async function stepRunner(session: Session, flow: Flow, userSay: Say): Pr
         const formattedFlowName = flow.name.replace(" ", "_");
         if (session.nextStep.flow !== formattedFlowName) {
             // Load new json corresponding to new flow
-            flow = fileReader(session.nextStep.flow);
+            flow = fileReader(FLOWS(), session.nextStep.flow);
             session.flow = formattedFlowName;
         }
 

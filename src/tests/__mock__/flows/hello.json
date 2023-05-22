@@ -1,0 +1,33 @@
+{
+    "name": "hello",
+    "description": "",
+    "startingId": 1,
+    "steps": [
+        {
+            "id": 1,
+            "say": {
+                "message": "Hello"
+            },
+            "follow": {
+                "nextCoord": { "flow": "hello", "id": 2 },
+                "fallbackCoord": { "flow": "hello", "id": 1 }
+            },
+            "flow": "hello",
+            "checkpoint": false,
+            "waitForUserInput": true
+        },
+        {
+            "id": 2,
+            "say": {
+                "message": "My name is Roboto"
+            },
+            "follow": {
+                "nextCoord": { "flow": "bye", "id": 1 },
+                "fallbackCoord": { "flow": "hello", "id": 1 }
+            },
+            "flow": "hello",
+            "checkpoint": true,
+            "waitForUserInput": false
+        }
+    ]
+}

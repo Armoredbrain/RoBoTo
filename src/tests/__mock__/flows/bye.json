@@ -1,0 +1,20 @@
+{
+    "name": "bye",
+    "description": "",
+    "startingId": 1,
+    "steps": [
+        {
+            "id": 1,
+            "say": {
+                "message": "Bye"
+            },
+            "follow": {
+                "nextCoord": { "flow": "bye", "id": 1 },
+                "fallbackCoord": { "flow": "bye", "id": 1 }
+            },
+            "flow": "bye",
+            "checkpoint": true,
+            "waitForUserInput": true
+        }
+    ]
+}

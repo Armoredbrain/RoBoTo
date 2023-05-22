@@ -3,7 +3,7 @@ import logger, { BotError } from "../console/logger";
 import { getSessionById, sessionBuilder, sessionCleaner } from "../managers/sessionManager";
 import { Session, SessionStatus } from "../types";
 import { stepRunner } from "../managers/stepManager";
-import { fileReader } from "../managers/fileManager";
+import { FLOWS, fileReader } from "../managers/fileManager";
 import { Say } from "../types";
 
 export async function speak(
@@ -25,7 +25,7 @@ export async function speak(
         }
 
         // TODO: flow should be stored in db and seeded at service startup
-        session = await stepRunner(session, fileReader(session.flow), req.body.say);
+        session = await stepRunner(session, fileReader(FLOWS(), session.flow), req.body.say);
 
         return res.status(200).json({
             session: sessionCleaner(session),
