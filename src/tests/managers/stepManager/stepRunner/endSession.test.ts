@@ -18,7 +18,7 @@ const session = {
 describe("endSession", () => {
     test("should close current session and return nextCoord", async () => {
         jest.spyOn(sessionManager, "updateSession").mockImplementation(async () => Promise.resolve());
-        const updateSession = await stepRunner(
+        const sessionAndSay = await stepRunner(
             session,
             {
                 name: "basic",
@@ -43,7 +43,7 @@ describe("endSession", () => {
                 message: "",
             }
         );
-        expect(updateSession.nextStep).toEqual({ flow: "basic", id: 1 });
-        expect(updateSession.status).toEqual(SessionStatus.CLOSED);
+        expect(sessionAndSay.session.nextStep).toEqual({ flow: "basic", id: 1 });
+        expect(sessionAndSay.session.status).toEqual(SessionStatus.CLOSED);
     });
 });

@@ -83,18 +83,21 @@ describe("speak", () => {
 
         const stepManagerSpy = jest.spyOn(stepManager, "stepRunner").mockReturnValueOnce(
             Promise.resolve({
-                checkpoint: { flow: "main", id: 1 },
-                flow: "main",
-                history: [
-                    {
-                        message: "Hello my name is roboto, how do you do?",
-                    },
-                ],
-                id: "aaaaaaaaaaaaaaaaaaaaaaaa",
-                nextStep: { flow: "main", id: 3 },
-                stacktrace: [],
-                status: SessionStatus.BUSY,
-                variables: {},
+                session: {
+                    checkpoint: { flow: "main", id: 1 },
+                    flow: "main",
+                    history: [
+                        {
+                            message: "Hello my name is roboto, how do you do?",
+                        },
+                    ],
+                    id: "aaaaaaaaaaaaaaaaaaaaaaaa",
+                    nextStep: { flow: "main", id: 3 },
+                    stacktrace: [],
+                    status: SessionStatus.BUSY,
+                    variables: {},
+                },
+                say: { message: "Hello my name is roboto, how do you do?" },
             })
         );
         jest.spyOn(fileManager, "fileReader").mockReturnValueOnce(flow);
@@ -102,7 +105,10 @@ describe("speak", () => {
         await speak(req as Request, res as Response);
 
         expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({ session: { id: expect.any(String), status: SessionStatus.BUSY } });
+        expect(res.json).toHaveBeenCalledWith({
+            session: { id: expect.any(String), status: SessionStatus.BUSY },
+            say: { message: "Hello my name is roboto, how do you do?" },
+        });
         expect(stepManagerSpy).toHaveBeenCalledWith(
             expect.objectContaining({
                 flow: "main",
@@ -156,21 +162,24 @@ describe("speak", () => {
 
         const stepManagerSpy = jest.spyOn(stepManager, "stepRunner").mockReturnValueOnce(
             Promise.resolve({
-                checkpoint: { flow: "main", id: 1 },
-                flow: "main",
-                history: [
-                    {
-                        message: "Hello my name is roboto, how do you do?",
-                    },
-                    {
-                        message: "I'm fine actually",
-                    },
-                ],
-                id: newSession.id,
-                nextStep: { flow: "main", id: 1 },
-                stacktrace: [],
-                status: SessionStatus.BUSY,
-                variables: {},
+                session: {
+                    checkpoint: { flow: "main", id: 1 },
+                    flow: "main",
+                    history: [
+                        {
+                            message: "Hello my name is roboto, how do you do?",
+                        },
+                        {
+                            message: "I'm fine actually",
+                        },
+                    ],
+                    id: newSession.id,
+                    nextStep: { flow: "main", id: 1 },
+                    stacktrace: [],
+                    status: SessionStatus.BUSY,
+                    variables: {},
+                },
+                say: { message: "I'm fine actually" },
             })
         );
         jest.spyOn(fileManager, "fileReader").mockReturnValueOnce(flow);
@@ -178,7 +187,10 @@ describe("speak", () => {
         await speak(req as Request, res as Response);
 
         expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({ session: { id: expect.any(String), status: SessionStatus.BUSY } });
+        expect(res.json).toHaveBeenCalledWith({
+            session: { id: expect.any(String), status: SessionStatus.BUSY },
+            say: { message: "I'm fine actually" },
+        });
         expect(stepManagerSpy).toHaveBeenCalledWith(
             expect.objectContaining({
                 flow: "main",

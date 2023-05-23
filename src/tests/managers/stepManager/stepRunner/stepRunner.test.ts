@@ -68,23 +68,25 @@ beforeEach(() => {
 describe("stepRunner", () => {
     test("Should handle step say and replace special wrapper with value from session", async () => {
         const newSession = await sessionBuilder(session);
-        const updatedSession = await stepRunner(newSession, flow, { message: "Let's go roboto" });
-        const lastStep = updatedSession.stacktrace[0] as Step;
-        expect(lastStep.say).toEqual({ message: `Hello, your session flow is basic` });
-        expect(updatedSession.checkpoint).toEqual({ id: 1, flow: "basic" });
-        expect(updatedSession.nextStep).toEqual({ id: 2, flow: "basic" });
+        const sessionAndSay = await stepRunner(newSession, flow, { message: "Let's go roboto" });
+        const lastStep = sessionAndSay.session.stacktrace[0] as Step;
+        expect(lastStep.say).toEqual({ message: "Hello, your session flow is basic" });
+        expect(sessionAndSay.session.checkpoint).toEqual({ id: 1, flow: "basic" });
+        expect(sessionAndSay.session.nextStep).toEqual({ id: 2, flow: "basic" });
+        expect(sessionAndSay.say.message).toEqual("Hello, your session flow is basic");
     });
     test("Should handle step say and replace special wrapper with Hu ho if absent from session", async () => {
         const newSession = await sessionBuilder({ ...session, nextStep: { flow: "basic", id: 2 } });
-        const updatedSession = await stepRunner(newSession, flow, { message: "Let's go roboto" });
-        const lastStep = updatedSession.stacktrace[0] as Step;
+        const sessionAndSay = await stepRunner(newSession, flow, { message: "Let's go roboto" });
+        const lastStep = sessionAndSay.session.stacktrace[0] as Step;
         expect(lastStep.say).toEqual({ message: `See you next time Hu Ho` });
-        expect(updatedSession.checkpoint).toEqual({ id: 1, flow: "basic" });
-        expect(updatedSession.nextStep).toEqual({ id: 2, flow: "basic" });
+        expect(sessionAndSay.session.checkpoint).toEqual({ id: 1, flow: "basic" });
+        expect(sessionAndSay.session.nextStep).toEqual({ id: 2, flow: "basic" });
+        expect(sessionAndSay.say.message).toEqual("Hello, your session flow is basic");
     });
     test("Should handle step say and replace special wrapper with an empty string path point to a key in a string", async () => {
         const newSession = await sessionBuilder(session);
-        const updatedSession = await stepRunner(
+        const sessionAndSay = await stepRunner(
             newSession,
             {
                 ...flow,
@@ -92,7 +94,7 @@ describe("stepRunner", () => {
                     {
                         id: 1,
                         say: {
-                            message: "Hello, your nextStep flow is: '${nextStep.flow}'",
+                            message: "Hello, your nextStep flow is: ${nextStep.flow}",
                         },
                         follow: {
                             nextCoord: { flow: "basic", id: 2 },
@@ -120,25 +122,27 @@ describe("stepRunner", () => {
             { message: "Let's go roboto" }
         );
 
-        const lastStep = updatedSession.stacktrace[0] as Step;
-        expect(lastStep.say).toEqual({ message: "Hello, your nextStep flow is: 'basic'" });
-        expect(updatedSession.checkpoint).toEqual({ id: 1, flow: "basic" });
-        expect(updatedSession.nextStep).toEqual({ id: 2, flow: "basic" });
+        const lastStep = sessionAndSay.session.stacktrace[0] as Step;
+        expect(lastStep.say).toEqual({ message: "Hello, your nextStep flow is: basic" });
+        expect(sessionAndSay.session.checkpoint).toEqual({ id: 1, flow: "basic" });
+        expect(sessionAndSay.session.nextStep).toEqual({ id: 2, flow: "basic" });
+        expect(sessionAndSay.say.message).toEqual("Hello, your nextStep flow is: basic");
     });
     test("Should handle recursivity and flow switch if step has waitForUserInput set to false and follow coord has a different flow than current flow", async () => {
         const newSession = await sessionBuilder({ ...session, nextStep: { id: 2, flow: "hello" }, flow: "hello" });
-        const updatedSession = await stepRunner(newSession, fileReader(FLOWS(), "hello"), {
+        const sessionAndSay = await stepRunner(newSession, fileReader(FLOWS(), "hello"), {
             message: "Let's go roboto",
         });
 
-        expect(updatedSession.checkpoint).toEqual({ id: 1, flow: "bye" });
-        expect(updatedSession.nextStep).toEqual({ id: 1, flow: "bye" });
-        expect(updatedSession.stacktrace.length).toEqual(2);
+        expect(sessionAndSay.session.checkpoint).toEqual({ id: 1, flow: "bye" });
+        expect(sessionAndSay.session.nextStep).toEqual({ id: 1, flow: "bye" });
+        expect(sessionAndSay.session.stacktrace.length).toEqual(2);
+        expect(sessionAndSay.say.message).toEqual("Bye");
     });
     test("Should use mapping to target correct flow", async () => {
-        const newSession = await sessionBuilder({ ...session, nextStep: { id: 1, flow: "mock" }, flow: "hello" });
+        const newSession = await sessionBuilder({ ...session, nextStep: { id: 1, flow: "mocker" }, flow: "hello" });
         jest.spyOn(NLU, "findIntent").mockReturnValueOnce(Promise.resolve({ name: "hello", info: {} }));
-        const updatedSession = await stepRunner(
+        const sessionAndSay = await stepRunner(
             newSession,
             {
                 description: "mock target different flow",
@@ -158,12 +162,12 @@ describe("stepRunner", () => {
             { message: "Let's go roboto" }
         );
 
-        expect(updatedSession.nextStep).toEqual({ id: 1, flow: "hello" });
+        expect(sessionAndSay.session.nextStep).toEqual({ id: 1, flow: "hello" });
     });
     test("Should fallback if intent doesn't correspond to an existing flow", async () => {
         const newSession = await sessionBuilder({ ...session, nextStep: { id: 1, flow: "mock" }, flow: "hello" });
         jest.spyOn(NLU, "findIntent").mockReturnValueOnce(Promise.resolve({ name: "toto", info: {} }));
-        const updatedSession = await stepRunner(
+        const sessionAndSay = await stepRunner(
             newSession,
             {
                 description: "mock target different flow",
@@ -183,6 +187,7 @@ describe("stepRunner", () => {
             { message: "Let's go roboto" }
         );
 
-        expect(updatedSession.nextStep).toEqual({ id: 1, flow: "mocker" });
+        expect(sessionAndSay.session.nextStep).toEqual({ id: 1, flow: "mocker" });
+        expect(sessionAndSay.say.message).toEqual("Hu ho");
     });
 });

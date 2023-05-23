@@ -26,7 +26,7 @@ describe("saveSessionVariables", () => {
                 action: "saveSessionVariables",
             },
         };
-        const updatedSession = await stepRunner(
+        const sessionAndSay = await stepRunner(
             session,
             {
                 name: "basic",
@@ -51,7 +51,7 @@ describe("saveSessionVariables", () => {
                 message: "",
             }
         );
-        expect(updatedSession.nextStep).toEqual({ flow: "basic", id: 1 });
-        expect(updatedSession.variables).toEqual(args);
+        expect(sessionAndSay.session.nextStep).toEqual({ flow: "basic", id: 1 });
+        expect(sessionAndSay.session.variables).toEqual(args);
     });
 });

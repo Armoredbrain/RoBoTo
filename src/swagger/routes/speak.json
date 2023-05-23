@@ -38,11 +38,24 @@
                         "schema": {
                             "type": "object",
                             "properties": {
-                                "id": {
-                                    "type": "string"
+                                "session": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "integer"
+                                        }
+                                    }
                                 },
-                                "status": {
-                                    "type": "integer"
+                                "say": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
                                 }
                             }
                         },
@@ -52,6 +65,9 @@
                                     "session": {
                                         "id": "aaaaaaaaaaaaaaaaaaaaaaaa",
                                         "status": 0
+                                    },
+                                    "say": {
+                                        "message": "hello user"
                                     }
                                 }
                             }

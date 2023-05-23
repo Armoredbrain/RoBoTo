@@ -31,7 +31,7 @@ export function getDeepValue(session: Session, path: string): string {
     }
 }
 
-export async function stepRunner(session: Session, flow: Flow, userSay: Say): Promise<Session> {
+export async function stepRunner(session: Session, flow: Flow, userSay: Say): Promise<{ session: Session; say: Say }> {
     const step = stepFinder(flow, session.nextStep);
 
     if (step.say && step.say.message) {
@@ -92,7 +92,7 @@ export async function stepRunner(session: Session, flow: Flow, userSay: Say): Pr
 
     // This is the only place where message should be saved
     if (step.say && step.say.message) {
-        // TODO: implement sending message through websocket
+        // TODO: implement sending message through websocket, for now messaging is made with a ping pong mechanism
         session.history.push({ message: step.say.message });
     }
 
@@ -115,5 +115,6 @@ export async function stepRunner(session: Session, flow: Flow, userSay: Say): Pr
         return await stepRunner(session, flow, userSay);
     }
 
-    return session;
+    // TODO: improve message handling if flow is badly build
+    return { session, say: { message: step.say?.message ?? "Hu ho" } };
 }

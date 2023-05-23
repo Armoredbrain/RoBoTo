@@ -9,7 +9,7 @@ import { Say } from "../types";
 export async function speak(
     req: Request<Record<string, string>, unknown, { say: Say }, Record<string, unknown>, Record<string, unknown>>,
     res: Response<
-        { session: Partial<Session> } | { session: Partial<Session> | undefined; error: string },
+        { session: Partial<Session>; say: Say } | { session: Partial<Session> | undefined; error: string },
         Record<string, unknown>
     >
 ): Promise<Response> {
@@ -25,10 +25,11 @@ export async function speak(
         }
 
         // TODO: flow should be stored in db and seeded at service startup
-        session = await stepRunner(session, fileReader(FLOWS(), session.flow), req.body.say);
+        const sessionAndSay = await stepRunner(session, fileReader(FLOWS(), session.flow), req.body.say);
 
         return res.status(200).json({
-            session: sessionCleaner(session),
+            session: sessionCleaner(sessionAndSay.session),
+            say: sessionAndSay.say,
         });
     } catch (error) {
         logger.error(

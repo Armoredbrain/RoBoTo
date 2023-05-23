@@ -16,7 +16,7 @@ const session = {
 describe("saveSessionVariablesWithUserInput", () => {
     test("should save variables from step args with user input to session and return nextCoord", async () => {
         jest.spyOn(sessionManager, "updateSession").mockReturnValue(Promise.resolve());
-        const updatedSession = await stepRunner(
+        const sessionAndSay = await stepRunner(
             session,
             {
                 name: "basic",
@@ -53,7 +53,7 @@ describe("saveSessionVariablesWithUserInput", () => {
                 message: "toto is here",
             }
         );
-        expect(updatedSession.nextStep).toEqual({ flow: "basic", id: 2 });
-        expect(updatedSession.variables).toEqual({ dynamicVariable: "toto is here" });
+        expect(sessionAndSay.session.nextStep).toEqual({ flow: "basic", id: 2 });
+        expect(sessionAndSay.session.variables).toEqual({ dynamicVariable: "toto is here" });
     });
 });
