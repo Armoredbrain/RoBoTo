@@ -18,7 +18,7 @@
             "flow": "bye",
             "checkpoint": false,
             "waitForUserInput": true,
-            "follow": { "nextCoord": { "flow": "exit", "stepId": 1 }, "fallbackCoord": { "flow": "exit", "stepId": 1 } }
+            "follow": { "nextCoord": { "flow": "bye", "stepId": 1 }, "fallbackCoord": { "flow": "bye", "stepId": 1 } }
         }
     ]
 }
