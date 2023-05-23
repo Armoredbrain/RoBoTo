@@ -8,11 +8,11 @@ describe("getDeepValue", () => {
             {
                 stacktrace: [],
                 flow: "basic",
-                nextStep: { flow: "basic", id: 1 },
+                nextStep: { flow: "basic", stepId: 1 },
                 status: SessionStatus.AVAILABLE,
                 variables: { echo: { toto: "is happy" } },
                 history: [],
-                checkpoint: { id: 1, flow: "basic" },
+                checkpoint: { stepId: 1, flow: "basic" },
                 id: "aaaaaaaaaaaaaaaaaaaaaaaa",
             },
             "variables.echo.toto"
@@ -25,11 +25,11 @@ describe("getDeepValue", () => {
             {
                 stacktrace: [],
                 flow: "basic",
-                nextStep: { flow: "basic", id: 1 },
+                nextStep: { flow: "basic", stepId: 1 },
                 status: SessionStatus.AVAILABLE,
                 variables: { echo: { toto: "is happy" } },
                 history: [],
-                checkpoint: { id: 1, flow: "basic" },
+                checkpoint: { stepId: 1, flow: "basic" },
                 id: "aaaaaaaaaaaaaaaaaaaaaaaa",
             },
             "variables.foo.bar"

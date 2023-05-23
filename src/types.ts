@@ -9,7 +9,7 @@ export interface StepFollow {
 }
 export interface StepCoord {
     flow: string;
-    id?: number;
+    stepId?: number;
 }
 export interface Step {
     action?: string;
@@ -17,7 +17,7 @@ export interface Step {
     checkpoint: boolean;
     flow: string;
     follow: StepFollow;
-    id: number;
+    stepId: number;
     type?: string;
     say?: Say;
     waitForUserInput: boolean;

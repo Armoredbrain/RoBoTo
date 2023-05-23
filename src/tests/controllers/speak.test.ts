@@ -24,38 +24,38 @@ const flow = {
     startingId: 1,
     steps: [
         {
-            id: 1,
+            stepId: 1,
             checkpoint: true,
             flow: "main",
-            follow: { fallbackCoord: { flow: "main", id: 2 }, nextCoord: { flow: "main", id: 3 } },
+            follow: { fallbackCoord: { flow: "main", stepId: 2 }, nextCoord: { flow: "main", stepId: 3 } },
             waitForUserInput: false,
             say: {
                 message: "Hello my name is roboto, how do you do?",
             },
         },
         {
-            id: 2,
+            stepId: 2,
             checkpoint: true,
             flow: "main",
             action: "checkMood",
-            follow: { nextCoord: { flow: "main", id: 3 }, fallbackCoord: { flow: "main", id: 4 } },
+            follow: { nextCoord: { flow: "main", stepId: 3 }, fallbackCoord: { flow: "main", stepId: 4 } },
             waitForUserInput: false,
         },
         {
-            id: 3,
+            stepId: 3,
             checkpoint: true,
             flow: "main",
-            follow: { fallbackCoord: { flow: "main", id: 1 }, nextCoord: { flow: "main", id: 1 } },
+            follow: { fallbackCoord: { flow: "main", stepId: 1 }, nextCoord: { flow: "main", stepId: 1 } },
             waitForUserInput: true,
             say: {
                 message: "Glad to hear it, what do you want to talk about",
             },
         },
         {
-            id: 4,
+            stepId: 4,
             checkpoint: true,
             flow: "main",
-            follow: { fallbackCoord: { flow: "main", id: 1 }, nextCoord: { flow: "main", id: 1 } },
+            follow: { fallbackCoord: { flow: "main", stepId: 1 }, nextCoord: { flow: "main", stepId: 1 } },
             waitForUserInput: true,
             say: {
                 message: "Let's see what we can do to cheer you up",
@@ -84,7 +84,7 @@ describe("speak", () => {
         const stepManagerSpy = jest.spyOn(stepManager, "stepRunner").mockReturnValueOnce(
             Promise.resolve({
                 session: {
-                    checkpoint: { flow: "main", id: 1 },
+                    checkpoint: { flow: "main", stepId: 1 },
                     flow: "main",
                     history: [
                         {
@@ -92,7 +92,7 @@ describe("speak", () => {
                         },
                     ],
                     id: "aaaaaaaaaaaaaaaaaaaaaaaa",
-                    nextStep: { flow: "main", id: 3 },
+                    nextStep: { flow: "main", stepId: 3 },
                     stacktrace: [],
                     status: SessionStatus.BUSY,
                     variables: {},
@@ -106,7 +106,7 @@ describe("speak", () => {
 
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({
-            session: { id: expect.any(String), status: SessionStatus.BUSY },
+            session: { id: expect.any(String) },
             say: { message: "Hello my name is roboto, how do you do?" },
         });
         expect(stepManagerSpy).toHaveBeenCalledWith(
@@ -127,20 +127,21 @@ describe("speak", () => {
                 history: [],
                 nextStep: expect.objectContaining({
                     flow: "main",
+                    stepId: 1,
                 }),
                 stacktrace: [],
-                status: SessionStatus.BUSY,
+                status: SessionStatus.AVAILABLE,
             }),
         ]);
     });
     test("should handle an existing session", async () => {
         const newSession = await new SessionModel({
-            checkpoint: { flow: "main", id: 1 },
+            checkpoint: { flow: "main", stepId: 1 },
             flow: "main",
             history: [],
-            nextStep: { flow: "main", id: 3 },
+            nextStep: { flow: "main", stepId: 3 },
             stacktrace: [],
-            status: SessionStatus.BUSY,
+            status: SessionStatus.AVAILABLE,
             variables: {},
         }).save();
         const req: Partial<Request> = {
@@ -163,7 +164,7 @@ describe("speak", () => {
         const stepManagerSpy = jest.spyOn(stepManager, "stepRunner").mockReturnValueOnce(
             Promise.resolve({
                 session: {
-                    checkpoint: { flow: "main", id: 1 },
+                    checkpoint: { flow: "main", stepId: 1 },
                     flow: "main",
                     history: [
                         {
@@ -174,7 +175,7 @@ describe("speak", () => {
                         },
                     ],
                     id: newSession.id,
-                    nextStep: { flow: "main", id: 1 },
+                    nextStep: { flow: "main", stepId: 1 },
                     stacktrace: [],
                     status: SessionStatus.BUSY,
                     variables: {},
@@ -188,16 +189,16 @@ describe("speak", () => {
 
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({
-            session: { id: expect.any(String), status: SessionStatus.BUSY },
+            session: { id: expect.any(String) },
             say: { message: "I'm fine actually" },
         });
         expect(stepManagerSpy).toHaveBeenCalledWith(
             expect.objectContaining({
                 flow: "main",
                 history: [],
-                nextStep: expect.objectContaining({ flow: "main" }),
+                nextStep: expect.objectContaining({ flow: "main", stepId: 3 }),
                 stacktrace: [],
-                status: SessionStatus.BUSY,
+                status: SessionStatus.AVAILABLE,
             }),
             flow,
             { message: "I'm fine actually" }
@@ -212,7 +213,7 @@ describe("speak", () => {
                     flow: "main",
                 }),
                 stacktrace: [],
-                status: SessionStatus.BUSY,
+                status: SessionStatus.AVAILABLE,
             }),
         ]);
     });
@@ -241,7 +242,7 @@ describe("speak", () => {
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-            session: { id: expect.any(ObjectId), status: SessionStatus.BUSY },
+            session: { id: expect.any(ObjectId) },
             error: "Something unusual happen during step running",
         });
     });

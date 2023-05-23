@@ -1,4 +1,5 @@
 {
     "hello": ["hello"],
-    "bye": ["bye"]
+    "bye": ["bye"],
+    "main": []
 }

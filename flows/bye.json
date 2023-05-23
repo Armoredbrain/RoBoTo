@@ -1,24 +1,24 @@
 {
     "name": "bye",
     "description": "Leave user be",
-    "start": 1,
+    "startingId": 1,
     "steps": [
         {
-            "id": 1,
+            "stepId": 1,
             "flow": "bye",
             "checkpoint": true,
             "waitForUserInput": true,
             "say": {
                 "message": "Bye bye"
             },
-            "follow": { "nextCoord": { "flow": "bye", "id": 2 }, "fallbackCoord": { "flow": "bye", "id": 2 } }
+            "follow": { "nextCoord": { "flow": "bye", "stepId": 2 }, "fallbackCoord": { "flow": "bye", "stepId": 2 } }
         },
         {
-            "id": 2,
+            "stepId": 2,
             "flow": "bye",
             "checkpoint": false,
             "waitForUserInput": true,
-            "follow": { "nextCoord": { "flow": "exit", "id": 1 }, "fallbackCoord": { "flow": "exit", "id": 1 } }
+            "follow": { "nextCoord": { "flow": "exit", "stepId": 1 }, "fallbackCoord": { "flow": "exit", "stepId": 1 } }
         }
     ]
 }

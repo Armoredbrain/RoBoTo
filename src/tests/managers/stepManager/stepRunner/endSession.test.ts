@@ -6,13 +6,13 @@ const session = {
     id: "aaaaaaaaaaaaaaaaaaaaaaaa",
     stacktrace: [] as Step[],
     flow: "basic",
-    nextStep: { flow: "basic", id: 1 },
+    nextStep: { flow: "basic", stepId: 1 },
     status: SessionStatus.AVAILABLE,
     variables: {
         book: "printer",
     },
     history: [],
-    checkpoint: { flow: "hello", id: 1 },
+    checkpoint: { flow: "hello", stepId: 1 },
 };
 
 describe("endSession", () => {
@@ -26,12 +26,12 @@ describe("endSession", () => {
                 startingId: 1,
                 steps: [
                     {
-                        id: 1,
+                        stepId: 1,
                         action: "endSession",
                         args: {},
                         follow: {
-                            nextCoord: { flow: "basic", id: 1 },
-                            fallbackCoord: { flow: "fallback", id: 1 },
+                            nextCoord: { flow: "basic", stepId: 1 },
+                            fallbackCoord: { flow: "fallback", stepId: 1 },
                         },
                         flow: "basic",
                         checkpoint: false,
@@ -43,7 +43,7 @@ describe("endSession", () => {
                 message: "",
             }
         );
-        expect(sessionAndSay.session.nextStep).toEqual({ flow: "basic", id: 1 });
+        expect(sessionAndSay.session.nextStep).toEqual({ flow: "basic", stepId: 1 });
         expect(sessionAndSay.session.status).toEqual(SessionStatus.CLOSED);
     });
 });

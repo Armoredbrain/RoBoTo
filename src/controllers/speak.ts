@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import logger, { BotError } from "../console/logger";
-import { getSessionById, sessionBuilder, sessionCleaner } from "../managers/sessionManager";
+import { getSessionById, sessionBuilder, sessionCleaner, updateSession } from "../managers/sessionManager";
 import { Session, SessionStatus } from "../types";
 import { stepRunner } from "../managers/stepManager";
 import { FLOWS, fileReader } from "../managers/fileManager";
@@ -18,14 +18,20 @@ export async function speak(
         session = await getSessionById(req.params.sessionId);
         if (!session) {
             session = await sessionBuilder({
-                nextStep: { flow: "main" },
+                nextStep: { flow: "main", stepId: 1 },
                 flow: "main",
                 status: SessionStatus.BUSY,
             });
+        } else if (session.status === SessionStatus.BUSY || session.status === SessionStatus.CLOSED) {
+            throw new Error("Session is unavailable");
         }
+
+        await updateSession({ id: session.id, status: SessionStatus.BUSY });
 
         // TODO: flow should be stored in db and seeded at service startup
         const sessionAndSay = await stepRunner(session, fileReader(FLOWS(), session.flow), req.body.say);
+
+        await updateSession({ id: session.id, status: SessionStatus.AVAILABLE });
 
         return res.status(200).json({
             session: sessionCleaner(sessionAndSay.session),

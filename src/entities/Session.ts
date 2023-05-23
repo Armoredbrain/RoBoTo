@@ -6,7 +6,7 @@ const SaySchema = new Schema<Say>({
 });
 const StepCoordSchema = new Schema<StepCoord>({
     flow: String,
-    id: { type: Number, required: false },
+    stepId: { type: Number, required: false },
 });
 const StepFollowSchema = new Schema<StepFollow>({
     fallbackCoord: StepCoordSchema,
@@ -18,7 +18,7 @@ const StepSchema = new Schema<Step>({
     checkpoint: Boolean,
     flow: String,
     follow: StepFollowSchema,
-    id: Number,
+    stepId: Number,
     type: String,
     say: SaySchema,
     waitForUserInput: Boolean,

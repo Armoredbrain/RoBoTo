@@ -4,8 +4,8 @@ import logger, { BotError } from "../console/logger";
 import { Flow, Say, Session, SessionStatus, Step } from "../types";
 import { findIntent } from "./nlu";
 
-export function stepFinder(flow: Flow, pointer: { flow: string; id?: number }): Step {
-    const step = flow.steps.find((el: Step) => el.id === (pointer.id ?? flow.startingId));
+export function stepFinder(flow: Flow, pointer: { flow: string; stepId?: number }): Step {
+    const step = flow.steps.find((el: Step) => el.stepId === (pointer.stepId ?? flow.startingId));
 
     if (!step) {
         // SHOULD NEVER HAPPEN if flow are correctly built and check
@@ -60,7 +60,9 @@ export async function stepRunner(session: Session, flow: Flow, userSay: Say): Pr
 
                 return acc;
             }, "");
-            session.nextStep = flow ? { flow, id: step.follow.nextCoord.id } : step.follow.fallbackCoord;
+            session.nextStep = flow
+                ? { flow, stepId: step.follow.nextCoord.stepId ?? fileReader(FLOWS(), flow).startingId }
+                : step.follow.fallbackCoord;
             break;
         }
 
@@ -97,7 +99,7 @@ export async function stepRunner(session: Session, flow: Flow, userSay: Say): Pr
     }
 
     if (step.checkpoint) {
-        session.checkpoint = { flow: step.flow, id: step.id };
+        session.checkpoint = { flow: step.flow, stepId: step.stepId };
     }
 
     // Update session with new value after each step

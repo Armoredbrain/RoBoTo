@@ -4,13 +4,13 @@
     "startingId": 1,
     "steps": [
         {
-            "id": 1,
+            "stepId": 1,
             "say": {
                 "message": "Bye"
             },
             "follow": {
-                "nextCoord": { "flow": "bye", "id": 1 },
-                "fallbackCoord": { "flow": "bye", "id": 1 }
+                "nextCoord": { "flow": "bye", "stepId": 1 },
+                "fallbackCoord": { "flow": "bye", "stepId": 1 }
             },
             "flow": "bye",
             "checkpoint": true,

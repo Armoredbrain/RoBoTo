@@ -20,7 +20,8 @@ export async function checkSessionStatus(req: Request, res: Response, next: Next
     }
 }
 
-export async function restoreSessionStatus(req: Request, _res: Response, next: NextFunction) {
+// TODO: trial and error with this middlware happening after controller run
+export async function restoreSessionStatus(req: Request, res: Response, next: NextFunction) {
     const session = await getSessionById(req.params.sessionId);
     if (session?.status !== SessionStatus.AVAILABLE) {
         await updateSession({ id: req.params.sessionId, status: SessionStatus.AVAILABLE });

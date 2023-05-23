@@ -1,24 +1,30 @@
 {
     "name": "hello",
     "description": "Greet user",
-    "start": 1,
+    "startingId": 1,
     "steps": [
         {
-            "id": 1,
+            "stepId": 1,
             "flow": "hello",
             "checkpoint": true,
             "waitForUserInput": true,
             "say": {
                 "message": "Hey"
             },
-            "follow": { "nextCoord": { "flow": "hello", "id": 2 }, "fallbackCoord": { "flow": "hello", "id": 2 } }
+            "follow": {
+                "nextCoord": { "flow": "hello", "stepId": 2 },
+                "fallbackCoord": { "flow": "hello", "stepId": 2 }
+            }
         },
         {
-            "id": 2,
-            "flow": "printer",
+            "stepId": 2,
+            "flow": "hello",
             "checkpoint": false,
-            "waitForUserInput": true,
-            "follow": { "nextCoord": { "flow": "hello", "id": 1 }, "fallbackCoord": { "flow": "hello", "id": 1 } }
+            "waitForUserInput": false,
+            "follow": {
+                "nextCoord": { "flow": "bye", "stepId": 1 },
+                "fallbackCoord": { "flow": "hello", "stepId": 1 }
+            }
         }
     ]
 }

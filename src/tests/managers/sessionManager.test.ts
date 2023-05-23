@@ -19,16 +19,16 @@ describe("sessionBuilder", () => {
     test("Should create new session from partial session", async () => {
         const session = {
             flow: "ok",
-            nextStep: { flow: "ok", id: 1 },
+            nextStep: { flow: "ok", stepId: 1 },
             status: SessionStatus.AVAILABLE,
-            checkpoint: { flow: "ok", id: 1 },
+            checkpoint: { flow: "ok", stepId: 1 },
         };
         const newSession = await sessionBuilder(session);
 
         expect(newSession).toEqual(
             expect.objectContaining({
                 flow: "ok",
-                nextStep: expect.objectContaining({ flow: "ok", id: 1 }),
+                nextStep: expect.objectContaining({ flow: "ok", stepId: 1 }),
                 status: SessionStatus.AVAILABLE,
                 stacktrace: [],
                 history: [],
@@ -42,10 +42,10 @@ describe("updateSession", () => {
     test("Should update session", async () => {
         const session = {
             flow: "ok",
-            nextStep: { flow: "ok", id: 1 },
+            nextStep: { flow: "ok", stepId: 1 },
         };
         const newSession = await sessionBuilder(session);
-        newSession.nextStep = { flow: "ok", id: 1 };
+        newSession.nextStep = { flow: "ok", stepId: 1 };
         await updateSession(newSession);
 
         const updatedSession = await SessionModel.findOne({ _id: newSession.id });
@@ -55,7 +55,7 @@ describe("updateSession", () => {
                 flow: "ok",
                 nextStep: expect.objectContaining({
                     flow: "ok",
-                    id: 1,
+                    stepId: 1,
                 }),
                 stacktrace: [],
                 history: [],
@@ -65,7 +65,7 @@ describe("updateSession", () => {
     test("Should create new session if session doesn't exist", async () => {
         await updateSession({
             id: "624d82dbea586780d087b9e8",
-            nextStep: { flow: "ok", id: 1 },
+            nextStep: { flow: "ok", stepId: 1 },
         });
         const updatedSession = await SessionModel.findOne({ id: "624d82dbea586780d087b9e8" });
         expect(updatedSession).toBeNull();
@@ -76,7 +76,7 @@ describe("sessionCleaner", () => {
     test("Should keep only keys pass in `keepKeys` argument", async () => {
         const session = {
             flow: "ok",
-            nextStep: { flow: "ok", id: 1 },
+            nextStep: { flow: "ok", stepId: 1 },
         };
         const newSession = await sessionBuilder(session);
         const cleanSession = sessionCleaner(newSession, ["id"]);
@@ -85,14 +85,13 @@ describe("sessionCleaner", () => {
     test("Should keep default keys in `keepKeys` argument", async () => {
         const session = {
             flow: "ok",
-            nextStep: { flow: "ok", id: 1 },
+            nextStep: { flow: "ok", stepId: 1 },
             status: 0,
         };
         const newSession = await sessionBuilder(session);
         const cleanSession = sessionCleaner(newSession);
         expect(cleanSession).toEqual({
             id: newSession.id,
-            status: 0,
         });
     });
 });

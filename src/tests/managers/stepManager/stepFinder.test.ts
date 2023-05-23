@@ -8,26 +8,26 @@ const flow: Flow = {
     startingId: 1,
     steps: [
         {
-            id: 1,
+            stepId: 1,
             say: {
                 message: "Hello",
             },
             follow: {
-                nextCoord: { flow: "basic", id: 2 },
-                fallbackCoord: { flow: "fallback", id: 1 },
+                nextCoord: { flow: "basic", stepId: 2 },
+                fallbackCoord: { flow: "fallback", stepId: 1 },
             },
             flow: "basic",
             checkpoint: false,
             waitForUserInput: true,
         },
         {
-            id: 2,
+            stepId: 2,
             say: {
                 message: "Bye",
             },
             follow: {
-                nextCoord: { flow: "basic", id: 1 },
-                fallbackCoord: { flow: "fallback", id: 1 },
+                nextCoord: { flow: "basic", stepId: 1 },
+                fallbackCoord: { flow: "fallback", stepId: 1 },
             },
             flow: "basic",
             checkpoint: false,
@@ -38,15 +38,15 @@ const flow: Flow = {
 
 describe("stepFinder", () => {
     test("Should return step correcponding to pointer value", async () => {
-        const step = stepFinder(flow, { flow: "basic", id: 1 });
+        const step = stepFinder(flow, { flow: "basic", stepId: 1 });
         expect(step).toEqual({
-            id: 1,
+            stepId: 1,
             say: {
                 message: "Hello",
             },
             follow: {
-                nextCoord: { flow: "basic", id: 2 },
-                fallbackCoord: { flow: "fallback", id: 1 },
+                nextCoord: { flow: "basic", stepId: 2 },
+                fallbackCoord: { flow: "fallback", stepId: 1 },
             },
             flow: "basic",
             checkpoint: false,
@@ -56,13 +56,13 @@ describe("stepFinder", () => {
     test("Should return a step using starting id from flow", async () => {
         const step = stepFinder(flow, { flow: "basic" });
         expect(step).toEqual({
-            id: 1,
+            stepId: 1,
             say: {
                 message: "Hello",
             },
             follow: {
-                nextCoord: { flow: "basic", id: 2 },
-                fallbackCoord: { flow: "fallback", id: 1 },
+                nextCoord: { flow: "basic", stepId: 2 },
+                fallbackCoord: { flow: "fallback", stepId: 1 },
             },
             flow: "basic",
             checkpoint: false,
@@ -73,15 +73,15 @@ describe("stepFinder", () => {
         const mainFlow = {
             ...flow,
             filename: "basic",
-            fallbacks: [
+            steps: [
                 {
-                    id: 1,
+                    stepId: 1,
                     say: {
                         message: "Welcome to fallback from main flow",
                     },
                     follow: {
-                        nextCoord: { flow: "basic", id: 2 },
-                        fallbackCoord: { flow: "fallback", id: 1 },
+                        nextCoord: { flow: "basic", stepId: 2 },
+                        fallbackCoord: { flow: "fallback", stepId: 1 },
                     },
                     flow: "basic",
                     checkpoint: false,
@@ -92,7 +92,7 @@ describe("stepFinder", () => {
         };
         jest.spyOn(fileManager, "fileReader").mockReturnValue(mainFlow);
         try {
-            stepFinder(flow, { flow: "???", id: 37 });
+            stepFinder(flow, { flow: "???", stepId: 37 });
         } catch (error) {
             expect(error.message).toEqual("Cannot find corresponding step");
         }

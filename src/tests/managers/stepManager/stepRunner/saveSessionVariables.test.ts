@@ -6,11 +6,11 @@ const session = {
     id: "aaaaaaaaaaaaaaaaaaaaaaaa",
     stacktrace: [] as Step[],
     flow: "basic",
-    nextStep: { flow: "basic", id: 1 },
+    nextStep: { flow: "basic", stepId: 1 },
     status: SessionStatus.AVAILABLE,
     variables: {},
     history: [],
-    checkpoint: { flow: "hello", id: 3 },
+    checkpoint: { flow: "hello", stepId: 3 },
 };
 
 describe("saveSessionVariables", () => {
@@ -34,12 +34,12 @@ describe("saveSessionVariables", () => {
                 startingId: 1,
                 steps: [
                     {
-                        id: 1,
+                        stepId: 1,
                         action: "saveSessionVariables",
                         args,
                         follow: {
-                            nextCoord: { flow: "basic", id: 1 },
-                            fallbackCoord: { flow: "fallback", id: 1 },
+                            nextCoord: { flow: "basic", stepId: 1 },
+                            fallbackCoord: { flow: "fallback", stepId: 1 },
                         },
                         flow: "basic",
                         checkpoint: true,
@@ -51,7 +51,7 @@ describe("saveSessionVariables", () => {
                 message: "",
             }
         );
-        expect(sessionAndSay.session.nextStep).toEqual({ flow: "basic", id: 1 });
+        expect(sessionAndSay.session.nextStep).toEqual({ flow: "basic", stepId: 1 });
         expect(sessionAndSay.session.variables).toEqual(args);
     });
 });

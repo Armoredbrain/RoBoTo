@@ -6,11 +6,11 @@ const session = {
     id: "aaaaaaaaaaaaaaaaaaaaaaaa",
     stacktrace: [] as Step[],
     flow: "basic",
-    nextStep: { flow: "basic", id: 1 },
+    nextStep: { flow: "basic", stepId: 1 },
     status: SessionStatus.AVAILABLE,
     variables: {},
     history: [],
-    checkpoint: { id: 1, flow: "basic" },
+    checkpoint: { stepId: 1, flow: "basic" },
 };
 
 describe("saveSessionVariablesWithUserInput", () => {
@@ -24,24 +24,24 @@ describe("saveSessionVariablesWithUserInput", () => {
                 startingId: 1,
                 steps: [
                     {
-                        id: 1,
+                        stepId: 1,
                         action: "saveSessionVariablesWithUserInput",
                         args: {
                             dynamicVariable: "",
                         },
                         follow: {
-                            nextCoord: { flow: "basic", id: 2 },
-                            fallbackCoord: { flow: "fallback", id: 1 },
+                            nextCoord: { flow: "basic", stepId: 2 },
+                            fallbackCoord: { flow: "fallback", stepId: 1 },
                         },
                         flow: "basic",
                         checkpoint: true,
                         waitForUserInput: true,
                     },
                     {
-                        id: 2,
+                        stepId: 2,
                         follow: {
-                            nextCoord: { flow: "basic", id: 1 },
-                            fallbackCoord: { flow: "fallback", id: 1 },
+                            nextCoord: { flow: "basic", stepId: 1 },
+                            fallbackCoord: { flow: "fallback", stepId: 1 },
                         },
                         flow: "basic",
                         checkpoint: true,
@@ -53,7 +53,7 @@ describe("saveSessionVariablesWithUserInput", () => {
                 message: "toto is here",
             }
         );
-        expect(sessionAndSay.session.nextStep).toEqual({ flow: "basic", id: 2 });
+        expect(sessionAndSay.session.nextStep).toEqual({ flow: "basic", stepId: 2 });
         expect(sessionAndSay.session.variables).toEqual({ dynamicVariable: "toto is here" });
     });
 });
