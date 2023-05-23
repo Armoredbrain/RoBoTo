@@ -246,6 +246,41 @@ describe("speak", () => {
             error: "Something unusual happen during step running",
         });
     });
+    test("should handle session having busy status", async () => {
+        const newSession = await new SessionModel({
+            checkpoint: { flow: "main", stepId: 1 },
+            flow: "main",
+            history: [],
+            nextStep: { flow: "main", stepId: 3 },
+            stacktrace: [],
+            status: SessionStatus.BUSY,
+            variables: {},
+        }).save();
+        const req: Partial<Request> = {
+            headers: {},
+            cookies: {},
+            params: {
+                sessionId: newSession.id,
+            },
+            body: {
+                say: { message: "I'm fine actually" },
+            },
+        };
+        const res: Partial<Response> = {
+            locals: {},
+        };
+
+        res.status = jest.fn().mockReturnValue(res);
+        res.json = jest.fn().mockReturnValue(res);
+
+        await speak(req as Request, res as Response);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            session: { id: expect.any(String) },
+            error: "Session is unavailable",
+        });
+    });
     test("should handle a critical error caused by database being disconnected during conversation and new session not being initialized", async () => {
         const req: Partial<Request> = {
             headers: {},

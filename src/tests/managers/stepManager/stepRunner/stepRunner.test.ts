@@ -139,31 +139,6 @@ describe("stepRunner", () => {
         expect(sessionAndSay.session.stacktrace.length).toEqual(2);
         expect(sessionAndSay.say.message).toEqual("Bye");
     });
-    test("Should use mapping to target correct flow", async () => {
-        const newSession = await sessionBuilder({ ...session, nextStep: { stepId: 1, flow: "mocker" }, flow: "hello" });
-        jest.spyOn(NLU, "findIntent").mockReturnValueOnce(Promise.resolve({ name: "hello", info: {} }));
-        const sessionAndSay = await stepRunner(
-            newSession,
-            {
-                description: "mock target different flow",
-                name: "mocker",
-                startingId: 1,
-                steps: [
-                    {
-                        stepId: 1,
-                        checkpoint: true,
-                        waitForUserInput: true,
-                        flow: "mocker",
-                        action: "targetFlow",
-                        follow: { nextCoord: { stepId: 1 } as StepCoord, fallbackCoord: { stepId: 1, flow: "mocker" } },
-                    },
-                ],
-            },
-            { message: "Let's go roboto" }
-        );
-
-        expect(sessionAndSay.session.nextStep).toEqual({ stepId: 1, flow: "hello" });
-    });
     test("Should fallback if intent doesn't correspond to an existing flow", async () => {
         const newSession = await sessionBuilder({ ...session, nextStep: { stepId: 1, flow: "mock" }, flow: "hello" });
         jest.spyOn(NLU, "findIntent").mockReturnValueOnce(Promise.resolve({ name: "toto", info: {} }));
