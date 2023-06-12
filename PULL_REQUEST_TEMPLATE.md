@@ -6,8 +6,8 @@
 
 ### Check list
 
--   [ ] tests ok
+-   [ ] unit tests ok
+-   [ ] mutator tests ok
+-   [ ] e2e tests ok
 -   [ ] update README.md
--   [ ] update .env.example
--   [ ] tests feature with brand new .env (`cp .env.example .env`) and fully up environment
 
