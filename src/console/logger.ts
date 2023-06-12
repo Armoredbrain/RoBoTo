@@ -33,7 +33,7 @@ export class BotError {
             this.message = data.customMessage ?? error.message;
             this.source = data.source;
             this.stack = error.stack;
-            this.information = this.information ?? {
+            this.information = data.information ?? {
                 name: error.name,
             };
         }
