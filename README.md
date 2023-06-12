@@ -86,6 +86,16 @@ fi
 
 -   `yarn test:watch`
 
+### Stryker
+
+#### Documentation
+
+[here](https://github.com/stryker-mutator/stryker-js)
+
+#### Simple test run
+
+-   `yarn stryker`
+
 ### Prettier
 
 #### Check project format

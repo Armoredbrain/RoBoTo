@@ -4,6 +4,7 @@ logs/
 .env
 .husky/
 coverage/
+reports/
 src/tests/mockFlows/
 src/db/database.db
 

@@ -19,7 +19,8 @@
     "swagger:bundle": "npx swagger-cli bundle ./src/swagger/baseApi.json --outfile ./src/swagger/swagger.json --type json && yarn prettier:fix",
     "test": "set NODE_ENV=test&& jest --detectOpenHandles --verbose",
     "test:coverage": "set NODE_ENV=test&& jest --detectOpenHandles --verbose --coverage",
-    "test:watch": "set NODE_ENV=test&& jest --detectOpenHandles --silent --verbose --watch"
+    "test:watch": "set NODE_ENV=test&& jest --detectOpenHandles --silent --verbose --watch",
+    "stryker": "npx stryker run --ignoreStatic"
   },
   "devDependencies": {
     "@stryker-mutator/core": "^7.0.2",
