@@ -46,13 +46,13 @@ export class BotError {
         this.code === 406 && (this.result.information = this.information);
     }
 
-    isAxiosErrorInstance = (object: unknown): object is AxiosError => {
+    isAxiosErrorInstance(object: unknown): object is AxiosError {
         if (object && typeof object === "object") {
             return "isAxiosError" in object;
         }
 
         return false;
-    };
+    }
 }
 
 export function logFormat(data: {
