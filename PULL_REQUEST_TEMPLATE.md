@@ -6,8 +6,8 @@
 
 ### Check list
 
-- [ ] tests ok
-- [ ] coverage without yellow and red
-- [ ] update README.md
-- [ ] update .env.example
-- [ ] tests feature with brand new .env (`cp .env.example .env`) and fully up environment
+-   [ ] tests ok
+-   [ ] update README.md
+-   [ ] update .env.example
+-   [ ] tests feature with brand new .env (`cp .env.example .env`) and fully up environment
+

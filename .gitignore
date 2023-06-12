@@ -6,3 +6,6 @@ logs/
 coverage/
 src/tests/mockFlows/
 src/db/database.db
+
+# stryker temp files
+.stryker-tmp
