@@ -6,6 +6,8 @@ import { SessionStatus } from "../../types";
 import * as stepManager from "../../managers/stepManager";
 import * as fileManager from "../../managers/fileManager";
 import { ObjectId } from "mongodb";
+import * as sessionManager from "../../managers/sessionManager";
+import logger from "../../console/logger";
 beforeAll(async () => {
     await connect();
 });
@@ -101,6 +103,7 @@ describe("speak", () => {
             })
         );
         jest.spyOn(fileManager, "fileReader").mockReturnValueOnce(flow);
+        const updateSessionSpy = jest.spyOn(sessionManager, "updateSession");
 
         await speak(req as Request, res as Response);
 
@@ -133,6 +136,14 @@ describe("speak", () => {
                 status: SessionStatus.AVAILABLE,
             }),
         ]);
+        expect(updateSessionSpy).toHaveBeenNthCalledWith(
+            1,
+            expect.objectContaining({ id: expect.any(ObjectId), status: 1 })
+        );
+        expect(updateSessionSpy).toHaveBeenNthCalledWith(
+            2,
+            expect.objectContaining({ id: expect.any(ObjectId), status: 0 })
+        );
     });
     test("should handle an existing session", async () => {
         const newSession = await new SessionModel({
@@ -237,6 +248,7 @@ describe("speak", () => {
             throw new Error("Something unusual happen during step running");
         });
         jest.spyOn(fileManager, "fileReader").mockReturnValueOnce(flow);
+        logger.error = jest.fn();
 
         await speak(req as Request, res as Response);
 
@@ -244,6 +256,21 @@ describe("speak", () => {
         expect(res.json).toHaveBeenCalledWith({
             session: { id: expect.any(ObjectId) },
             error: "Something unusual happen during step running",
+        });
+        expect(logger.error).toHaveBeenCalledWith({
+            code: 500,
+            information: {
+                errorCode: undefined,
+                name: "Error",
+            },
+            isAxiosError: false,
+            message: "Speaking with roboto seems to be complicated at the moment",
+            result: {
+                code: 500,
+                message: "Speaking with roboto seems to be complicated at the moment",
+            },
+            source: "speak",
+            stack: expect.any(String),
         });
     });
     test("should handle session having busy status", async () => {
@@ -254,6 +281,41 @@ describe("speak", () => {
             nextStep: { flow: "main", stepId: 3 },
             stacktrace: [],
             status: SessionStatus.BUSY,
+            variables: {},
+        }).save();
+        const req: Partial<Request> = {
+            headers: {},
+            cookies: {},
+            params: {
+                sessionId: newSession.id,
+            },
+            body: {
+                say: { message: "I'm fine actually" },
+            },
+        };
+        const res: Partial<Response> = {
+            locals: {},
+        };
+
+        res.status = jest.fn().mockReturnValue(res);
+        res.json = jest.fn().mockReturnValue(res);
+
+        await speak(req as Request, res as Response);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            session: { id: expect.any(String) },
+            error: "Session is unavailable",
+        });
+    });
+    test("should handle session having closed status", async () => {
+        const newSession = await new SessionModel({
+            checkpoint: { flow: "main", stepId: 1 },
+            flow: "main",
+            history: [],
+            nextStep: { flow: "main", stepId: 3 },
+            stacktrace: [],
+            status: SessionStatus.CLOSED,
             variables: {},
         }).save();
         const req: Partial<Request> = {
